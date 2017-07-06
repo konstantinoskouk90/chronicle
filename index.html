@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/jquery-3.1.1.min.js"></script>
+    <script src="../js/popup.js"></script>
+</head>
+
+<body>
+    <!-- APP -->
+    <div class="app">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <div class="menu-back">
+                    <img src="../assets/images/menu-back.png" width="19" height="19" />
+                </div>
+                <div class="app-logo">
+                    <img src="../assets/images/app-logo.png" width="18" height="18" />
+                </div>
+                <span id="app-name">CHRONICLE</span>
+            </div>
+            <div class="header-right">
+                <div id="new-playlist-logo"></div>
+                <div id="new-playlist">Create Playlist</div>
+            </div>
+        </div>
+        <!-- MAIN -->
+        <div class="main">
+            <div class="wrap-search">
+                <input type="text" name="search-playlist" id="search-playlist" placeholder="Search for your playlist" autocomplete="off" />
+                <input type="text" name="search-video" id="search-video" placeholder="Search for your video" autocomplete="off" />
+            </div>
+            <div class="results-header">
+                <div class="results-wrapper"></div>
+            </div>
+        </div>
+        <!-- PREVIEW -->
+        <div class="preview">
+            <div class="edit-playlist-wrapper" title="Edit Playlist Details">
+                <img src="../assets/images/edit-playlist.png" width="25.75" height="25.75" />
+                <span id="edit-playlist-text">Edit Details</span>
+                <span id="edit-video-text">Edit Details</span>
+            </div>
+            <div class="link-playlist-wrapper" title="Copy Playlist Link">
+                <img src="../assets/images/link-playlist.png" width="25.75" height="25.75" />
+                <span id="link-playlist-text">Copy Link</span>
+                <span id="link-video-text">Copy Link</span>
+            </div>
+            <div class="preview-playlist-wrapper" title="Preview Playlist">
+                <img src="../assets/images/preview-playlist.png" width="25.75" height="25.75">
+                <span id="preview-playlist-text">Preview</span>
+                <span id="preview-video-text">Preview</span>
+            </div>
+            <div id="playlist-player">
+                <div id="play-button-wrapper">
+                    <div class="playlist-num-videos" title="Videos">
+                        <img src="../assets/images/videos.png" width="22" height="22">
+                        <span id="videos-text"></span>
+                    </div>
+                    <div id="play-playlist-video"></div>
+                </div>
+                <div class="controls-wrapper">
+                    <div id="add-videos" title="Add a video to your playlist while on a YouTube video page">Add Video</div>
+                    <div id="scan-page" title="Scan the current page for YouTube videos and add them to your playlist">Scan Page</div>
+                    <div id="view-videos" title="View and edit your playlist's videos">View Playlist</div>
+                </div>
+            </div>
+            <div class="video-player">
+                <div id="play-youtube-video"></div>
+            </div>
+            <div class="details-wrapper">
+                <div class="title-details-wrapper">
+                    <span id="playlist-name" title="Playlist Name" class="ellipsis"></span>
+                    <span id="video-title" title="Video Title" class="ellipsis"></span>
+                </div>
+                <div class="description-details-wrapper">
+                    <span id="playlist-description" title="Playlist Description" class="ellipsis"></span>
+                    <a id="youtube-channel" title="YouTube Channel" class="ellipsis"></a>
+                </div>
+                <div class="video-details-wrapper">
+                    <span id="updated-text" title="Last Updated"></span>
+                    <span id="playlist-name-video" title="Playlist Name" class="ellipsis"></span>
+                </div>
+                <div class="position-wrapper">
+                    <span id="plays-text" title="Play Count"></span>
+                    <span id="video-position" title="Video Position"></span>
+                </div>
+                <div class="delete-wrapper">
+                    <span id="delete-playlists">Delete Playlist</span>
+                    <span id="delete-videos"></span>
+                </div>
+            </div>
+        </div>
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="how-to-wrapper">
+                <img src="../assets/images/how-to.png" title="How To" width="19.75" height="19.75" />
+            </div>
+            <div class="navigation-wrapper">
+                <div class="arrow-bb" title="First Page">
+                    <img src="../assets/images/arrow-bb.png" width="23.25" height="15.5">
+                </div>
+                <div class="arrow-b" title="Previous Page">
+                    <img src="../assets/images/arrow-b.png" width="15.5" height="15.5">
+                </div>
+                <div id="page-current"></div>
+                <div id="vid-page-current"></div>
+                <div id="page-out-of">of</div>
+                <div id="page-total"></div>
+                <div id="vid-page-total"></div>
+                <div class="arrow-f" title="Next Page">
+                    <img src="../assets/images/arrow-f.png" width="15.5" height="15.5">
+                </div>
+                <div class="arrow-ff" title="Last Page">
+                    <img src="../assets/images/arrow-ff.png" width="23.25" height="15.5">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- POPUP -->
+    <div class="overlay">
+        <div id="popup-bg"></div>
+        <div class="welcome-popup">
+            <div class="header-welcome">
+                <img class="popup-video-close" src="../assets/images/close.png" width="12" height="12">
+                <span id="welcome-popup-title">Welcome</span>
+            </div>
+            <div class="main-welcome">
+                <div>
+                    <span id="welcome-app-name">CHRONICLE</span> is a master tool that allows you to create, edit & preview real
+                    <span id="welcome-yt-name-one">You</span><span id="welcome-yt-name-two">Tube</span> playlists on the fly!
+                </div>
+                </br>
+                <div>
+                    <span id="welcome-beginners-guide">Want to watch the beginner's guide?</span>
+                    <p>Click the button below to learn how to use the application, and get a full overview of its features.</p>
+                </div>
+                </br>
+                <div id="welcome-how-to-button">HOW TO</div>
+                </br>
+                </br>
+                <div>
+                    <span id="welcome-first-playlist">Ready to create your first playlist?</span>
+                    <p>Click the button below to start creating your first playlist, and add all of your favorite videos to it.</p>
+                </div>
+                <div id="welcome-create-button">CREATE</div>
+                <div class="welcome-checkbox-wrapper">
+                    <input type="checkbox" id="welcome-checkbox" />
+                </div>
+                <div id="welcome-never-show">Don't show this message again</div>
+            </div>
+        </div>
+        <div class="delete-app-popup">
+            <div class="header-delete">
+                <span id="delete-title"></span>
+            </div>
+            <div class="main-delete">
+                <span></span>
+                <div class="delete-button">
+                    <div id="delete-cancel">CANCEL</div>
+                    <div id="delete-delete">DELETE</div>
+                </div>
+            </div>
+        </div>
+        <div class="preview-popup-how-to-wrapper">
+            <div class="header-preview-popup-video">
+                <img class="popup-video-back" src="../assets/images/back.png" width="16" height="16">
+                <img class="popup-video-close" src="../assets/images/close.png" width="12" height="12">
+                <span id="how-to-title">How To</span>
+            </div>
+            <div class="preview-popup-how-to">
+                <img id="how-to-play-video" src="../assets/images/play-video.png" width="46.54" height="32.77">
+                <img id="how-to-bg-image" src="../assets/images/how-to-thumbnail.png" width="426" height="240">
+            </div>
+        </div>
+        <div class="preview-popup-video">
+            <iframe id="video-frame" width="426" height="240" src="" frameborder="0"></iframe>
+        </div>
+        <div class="scan-page-popup">
+            <div class="header-scan">
+                <span id="scan-title">Scan Page</span>
+            </div>
+            <div id="scan-num-found"></div>
+            <div id="scan-num-text"></div>
+            <div class="scan-playlist-total">
+                <div id="scan-total-text"></div>
+                <div id="scan-total-dynamic"></div>
+                <div id="scan-total-static"></div>
+            </div>
+            <div class="scan-page-main">
+                <div class="scan-page-gif">
+                    <div class="scan-gif-popup">
+                        <img src="../assets/images/scan-page.gif" width="57.5" height="57.5" />
+                        <span id="scan-page-text">Scanning</span>
+                    </div>
+                </div>
+                <div id="scan-found-title"></div>
+                <div id="scan-found-author"></div>
+                <div id="scan-found-select"></div>
+            </div>
+            <div id="scan-cancel">CANCEL</div>
+            <div id="scan-update">UPDATE</div>
+            <div id="scan-error-message"></div>
+        </div>
+        <div class="app-popup">
+            <div class="header-app-popup">
+                <img class="popup-video-back" src="../assets/images/back.png" width="16" height="16">
+                <span id="title-app-popup"></span>
+            </div>
+            <div class="main-app-popup">
+                <div id="main-popup-name">
+                    <span>Name</span>
+                </div>
+                <div class="main-popup-character-name-wrapper">
+                    <div id="character-name-length"></div>
+                    <div id="character-name-limit">/ 40</div>
+                </div>
+                <input id="new-playlist-name" type="text" maxlength="40" value="New Playlist" placeholder="Playlist name" />
+                <div class="main-popup-description">
+                    <span>Description</span>
+                </div>
+                <div class="main-popup-position">
+                    <span>Position</span>
+                </div>
+                <div class="main-popup-character-description-wrapper">
+                    <div id="character-description-length"></div>
+                    <div id="character-description-limit">/ 80</div>
+                </div>
+                <textarea id="new-playlist-description" type="text" maxlength="80" placeholder="Give your playlist a description."></textarea>
+                <div class="main-popup-position-wrapper">
+                    <div id="position-active"></div>
+                    <div id="position-total"></div>
+                </div>
+                <div class="main-popup-image-wrapper">
+                    <span>Image</span>
+                </div>
+                <div class="main-popup-thumbnail-wrapper">
+                    <span>Thumbnail</span>
+                </div>
+                <textarea id="new-playlist-image" placeholder="Paste your image link - e.g. https://example.com/a.jpg Supports: gif/jpeg/jpg/png"></textarea>
+                <div class="main-popup-thumbnail">
+                    <li id="thumb-one" title="Medium Quality">MQ</li>
+                    <li id="thumb-two" title="High Quality">HQ</li>
+                    <li id="thumb-three" title="Standard Definition">SD</li>
+                    <li id="thumb-four" title="Maximum Resolution">MR</li>
+                </div>
+                <div id="main-popup-image-import">IMPORT</div>
+                <div class="main-popup-playlist-preview">
+                    <span>Preview</span>
+                </div>
+                <div class="main-popup-video-preview">
+                    <span>Preview</span>
+                </div>
+                <div class="main-popup-preview-box">
+                    <img src="../assets/images/alphabet/n.png" />
+                </div>
+                <div id="main-popup-error-message"></div>
+                <div id="main-popup-cancel">CANCEL</div>
+                <div id="main-popup-create"></div>
+            </div>
+        </div>
+    </div>
+    <!-- AJAX LOADER -->
+    <div class="overlay-ajax-loading">
+        <div class="popup-loading-wrapper">
+            <img src="../assets/images/ajax-loader.gif" width="50" height="50" />
+            <span id="popup-loading-text">Loading</span>
+        </div>
+    </div>
+    <!-- PRELOAD IMAGES -->
+    <img style="display: none; background-image: url(../assets/images/play-video-hover.png);">
+    <img style="display: none; background-image: url(../assets/images/new-playlist-alert.png);">
+    <img style="display: none; background-image: url(../assets/images/position-up-hover.png);">
+    <img style="display: none; background-image: url(../assets/images/position-down-hover.png);">
+    <!-- COPIED LINK -->
+    <div id="copied-link" style="display: none;"></div>
+</body>
+
+</html>
