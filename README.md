@@ -1,6 +1,6 @@
 <h1>#chronicle</h1>
 
-<h4>JavaScript chrome extension built using Native JavaScript &amp; jQuery - Available in the web store</h4>
+<h4>JavaScript chrome extension built using VanillaJS / jQuery</h4>
 
 <h2>Features</h2>
 
@@ -15,7 +15,7 @@
 <p>Google Chrome is required to install this extension.</p>
 <ul>
 	<li>Redirect to https://chrome.google.com/webstore/detail/chronicle-for-youtube/mmjiklhkmelmcndgghbkfknilhidphdb.</li>
-	<li>Click on Add to Chrome.</li>
+	<li>Click on ADD TO CHROME.</li>
 	<li>Enjoy!</li>
 </ul>
 
