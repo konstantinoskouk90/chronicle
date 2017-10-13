@@ -2762,6 +2762,7 @@ $(document).ready(function() {
         return succeed;
     }
 
+    // Do not show the welcome popup again
     $(document).on("change", WELCOME_CHECKBOX, function() {
         if ($(this).is(":checked")) {
             localStorage.setItem("welcome_box", 1);
@@ -2769,6 +2770,28 @@ $(document).ready(function() {
             delete localStorage.welcome_box;
         }
     });
+
+    // Select all scanned videos - TODO
+    /*$(document).on("change", "#select-all-checkbox", function() {
+        if ($(this).is(":checked")) {
+            console.log("Check!");
+            for(var i=0; i<$(".scanned-video-select").length; i++) {
+                if($(".scanned-video-select:nth(" + i + ")").attr("data-class") === "add") {
+                    if($(".scanned-video-select:nth(" + i + ")").parent().css("pointer-events") === "auto") {
+                        $(".scanned-video-select:nth(" + i + ")").click();
+                    }
+                }
+            }
+        } else {
+            for(var i=0; i<$(".scanned-video-select").length; i++) {
+                if($(".scanned-video-select:nth(" + i + ").selected").attr("data-class") === "add") {
+                    if($(".scanned-video-select:nth(" + i + ").selected")) {
+                        $(".scanned-video-select:nth(" + i + ").selected").click();
+                    }
+                }
+            }
+        }
+    });*/
 
     $(document).on("click", WELCOME_HOW_TO_BUTTON + "," + WELCOME_CREATE_BUTTON + "," + CLOSE_WELCOME_POPUP + "," + CLOSE_HOW_TO_POPUP + "," + BACK_TO_WELCOME_HOW_TO + "," + BACK_TO_WELCOME_CREATE, function() {
         if ($(this).is(WELCOME_HOW_TO_BUTTON)) {
