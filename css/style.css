@@ -744,7 +744,8 @@ body {
 }
 
 #scan-text {
-    width: auto height: auto;
+    width: auto;
+    height: auto;
     margin-left: 15px;
     float: left;
 }
@@ -1394,7 +1395,6 @@ body {
     width: 64px;
     height: 20px;
     color: #bbb999;
-    absolute;
     top: 140.5px;
     left: 221.25px;
     float: left;
@@ -1479,7 +1479,7 @@ body {
 #scan-error-message {
     width: 500px;
     height: 15px;
-    padding 0 7px;
+    padding: 0 7px;
     position: absolute;
     top: 385px;
     background-color: #434343;
@@ -1874,7 +1874,6 @@ body {
     overflow-y: hidden;
     margin: auto;
     display: block;
-    text-size-adjust: 100%;
     border-radius: 2px;
     box-shadow: 1px 1px 0.5px 1px black;
 }
@@ -1891,14 +1890,14 @@ body {
     font-family: "Roboto", sans-serif;
     font-weight: 300;
     text-align: center;
-    display: inline;
+    display: block;
     box-shadow: 1px 1px 0.5px 1px black;
 }
 
 #main-popup-error-message {
     width: 400px;
     height: 15px;
-    padding 0 7px;
+    padding: 0 7px;
     position: absolute;
     top: 385px;
     background-color: #434343;
