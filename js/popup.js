@@ -1,5 +1,5 @@
 /* jshint esnext: true */
-$(document).ready(function() {
+$(document).ready(function () {
 
     //CONSTANTS
     const ACTIVE_ELEMENT = ".active-element",
@@ -218,7 +218,7 @@ $(document).ready(function() {
         playlists.sort();
         $(RESULTS_WRAPPER).text("");
 
-        playlists.forEach(function(k, i) {
+        playlists.forEach(function (k, i) {
 
             count++;
 
@@ -272,7 +272,7 @@ $(document).ready(function() {
     }
 
     //PLAYLIST VIEW SEARCH
-    $(document).on("keyup", SEARCH_PLAY, debounce(function(ev, pg, pm, pt) {
+    $(document).on("keyup", SEARCH_PLAY, debounce(function (ev, pg, pm, pt) {
 
         added = 0;
         temp = 0;
@@ -281,7 +281,7 @@ $(document).ready(function() {
             count = -1,
             searchField = new RegExp($(SEARCH_PLAY).val(), "i");
 
-        $.post(window.location.href, function() {
+        $.post(window.location.href, function () {
 
             var objParse = JSON.parse(localStorage.playlist),
                 playlists = Object.keys(JSON.parse(localStorage.playlist));
@@ -289,7 +289,7 @@ $(document).ready(function() {
             playlists.sort();
             $(RESULTS_WRAPPER).text("");
 
-            playlists.forEach(function(k, i) {
+            playlists.forEach(function (k, i) {
 
                 var decKey = decodeURIComponent(k.replace(/\+/g, " "));
 
@@ -385,7 +385,7 @@ $(document).ready(function() {
     }, 250));
 
     //VIDEO VIEW SEARCH
-    $(document).on("keyup", SEARCH_VID, debounce(function(ev, pg, pm, mp) {
+    $(document).on("keyup", SEARCH_VID, debounce(function (ev, pg, pm, mp) {
 
         var lnk = [],
             ttl = [],
@@ -394,7 +394,7 @@ $(document).ready(function() {
             vps = [],
             srv = new RegExp($(SEARCH_VID).val(), "i");
 
-        $.post(window.location.href, function() {
+        $.post(window.location.href, function () {
 
             vid_added = 0;
             vid_temp = 0;
@@ -402,7 +402,7 @@ $(document).ready(function() {
             var objParse = JSON.parse(sessionStorage.video),
                 videos = Object.keys(objParse);
 
-            videos.forEach(function(k, i) {
+            videos.forEach(function (k, i) {
 
                 if (srv.test(objParse[k].video_title)) {
 
@@ -697,7 +697,7 @@ $(document).ready(function() {
 
             if (!$(SEARCH_VID).val().length) {
                 $(SEARCH_VID).attr("disabled", true);
-                setTimeout(function() {
+                setTimeout(function () {
                     $(MENU_BACK_IMG).trigger("click");
                 }, 1000);
             }
@@ -776,7 +776,7 @@ $(document).ready(function() {
     }
 
     //NAVIGATION ARROWS
-    $(document).on("click", ARROW_LAST + "," + ARROW_NEXT + "," + ARROW_PREV + "," + ARROW_FIRST, function() {
+    $(document).on("click", ARROW_LAST + "," + ARROW_NEXT + "," + ARROW_PREV + "," + ARROW_FIRST, function () {
 
         if ($(this).is(ARROW_LAST)) {
             direction = "LAST";
@@ -839,7 +839,7 @@ $(document).ready(function() {
     }
 
     //ADD VIDEO | PLAY PLAYLIST
-    $(document).on("click", ADD_VIDS + "," + PLAY_BUTTON_WRAPPER, function() {
+    $(document).on("click", ADD_VIDS + "," + PLAY_BUTTON_WRAPPER, function () {
 
         if (navigator.onLine && $(this).css("cursor") !== "wait") {
 
@@ -948,7 +948,7 @@ $(document).ready(function() {
                 }
             }
 
-            chrome.runtime.getBackgroundPage(function(bg) {
+            chrome.runtime.getBackgroundPage(function (bg) {
 
                 if ($(self).is(ADD_VIDS)) {
                     bg.chromeExtension.updatePlaylist(send);
@@ -965,7 +965,7 @@ $(document).ready(function() {
                 }
             });
 
-            chrome.runtime.onMessage.addListener(function(message, messageSender, sendResponse) {
+            chrome.runtime.onMessage.addListener(function (message, messageSender, sendResponse) {
 
                 chrome.runtime.onMessage.removeListener(arguments.callee);
 
@@ -1020,7 +1020,7 @@ $(document).ready(function() {
     });
 
     //PLAY VIDEO
-    $(document).on("click", VIDEO_PLAYER, function() {
+    $(document).on("click", VIDEO_PLAYER, function () {
 
         if (navigator.onLine) {
 
@@ -1041,7 +1041,7 @@ $(document).ready(function() {
     });
 
     //ACTIVE PLAYLIST | ACTIVE VIDEO
-    $(document).on("click", IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE, function() {
+    $(document).on("click", IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE, function () {
 
         if ($(this).is(IMG_WRAPPER)) {
 
@@ -1088,7 +1088,7 @@ $(document).ready(function() {
     });
 
     //RETURN TO MAIN MENU
-    $(document).on("click", MENU_BACK_IMG, function() {
+    $(document).on("click", MENU_BACK_IMG, function () {
 
         delete sessionStorage.video;
 
@@ -1126,7 +1126,7 @@ $(document).ready(function() {
     });
 
     //SCAN PAGE
-    $(document).on("click", SCAN_PAGE_WRAPPER, function() {
+    $(document).on("click", SCAN_PAGE_WRAPPER, function () {
 
         if (navigator.onLine && $(this).css("cursor") !== "wait") {
 
@@ -1134,11 +1134,11 @@ $(document).ready(function() {
 
             $(self).css("cursor", "wait");
 
-            chrome.runtime.getBackgroundPage(function(bg) {
+            chrome.runtime.getBackgroundPage(function (bg) {
                 bg.chromeExtension.activeTab();
             });
 
-            chrome.runtime.onMessage.addListener(function(message, messageSender, sendResponse) {
+            chrome.runtime.onMessage.addListener(function (message, messageSender, sendResponse) {
 
                 if (message.data === "VIDEOS_SCANNED") {
 
@@ -1248,7 +1248,7 @@ $(document).ready(function() {
         }
 
         $.getJSON("https://noembed.com/embed", { format: "json", url: s_link })
-            .done(function(response) {
+            .done(function (response) {
 
                 if (response.error === undefined) {
                     scan_active_title.push(response.title);
@@ -1334,7 +1334,7 @@ $(document).ready(function() {
     }
 
     //SELECT SCANNED RESULT
-    $(document).on("click", SCANNED_VIDEO_SELECT, function() {
+    $(document).on("click", SCANNED_VIDEO_SELECT, function () {
 
         if (!$(this).hasClass("selected") && $(this).parent().css("cursor") !== "not-allowed") {
             $(this).addClass("selected");
@@ -1380,7 +1380,7 @@ $(document).ready(function() {
     });
 
     //MOUSEENTER SCANNED RESULT
-    $(document).on("mouseenter", POPUP_SELECT_WRAPPER, function() {
+    $(document).on("mouseenter", POPUP_SELECT_WRAPPER, function () {
 
         if ($(this).children().hasClass("selected")) {
             $(this).children().text("REMOVE");
@@ -1398,7 +1398,7 @@ $(document).ready(function() {
     });
 
     //MOUSELEAVE SCANNED RESULT
-    $(document).on("mouseleave", POPUP_SELECT_WRAPPER, function() {
+    $(document).on("mouseleave", POPUP_SELECT_WRAPPER, function () {
 
         if ($(this).children().hasClass("selected")) {
             $(this).children().text("ADDED");
@@ -1409,13 +1409,13 @@ $(document).ready(function() {
     });
 
     //CANCEL SCAN POPUP
-    $(SCAN_CANCEL).click(function() {
+    $(SCAN_CANCEL).click(function () {
         hideScanner();
         cur_add = 0;
     });
 
     //UPDATE SCAN POPUP
-    $(document).on("click", SCAN_UPDATE, function() {
+    $(document).on("click", SCAN_UPDATE, function () {
 
         var tv, active_obj = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")];
 
@@ -1481,11 +1481,11 @@ $(document).ready(function() {
                     send.playlist = lst;
                 }
 
-                chrome.runtime.getBackgroundPage(function(bg) {
+                chrome.runtime.getBackgroundPage(function (bg) {
                     bg.chromeExtension.createPlaylist(send);
                 });
 
-                chrome.runtime.onMessage.addListener(function(message, messageSender, sendResponse) {
+                chrome.runtime.onMessage.addListener(function (message, messageSender, sendResponse) {
 
                     chrome.runtime.onMessage.removeListener(arguments.callee);
 
@@ -1505,19 +1505,19 @@ $(document).ready(function() {
                             cur_add = 0;
                         }
 
-                        setTimeout(function() {
+                        setTimeout(function () {
                             if (!!$(SEARCH_PLAY).val().length) {
                                 searchAnimation = true;
                                 $(SEARCH_PLAY).trigger("keyup", [pg]);
                             } else {
                                 createPlaylist("UPDATE", pg);
-                                setTimeout(function() {
+                                setTimeout(function () {
                                     playlistMessage("added_video");
                                 }, 50);
                             }
                         }, 100);
 
-                        setTimeout(function() {
+                        setTimeout(function () {
                             if (!$(SEARCH_PLAY).val().length) {
                                 hideScanner();
                                 $(self).css("cursor", "pointer");
@@ -1542,7 +1542,7 @@ $(document).ready(function() {
     });
 
     //DOUBLE CLICK VIEW PLAYLIST CONTENTS
-    $(document).on("dblclick", IMG_WRAPPER, function() {
+    $(document).on("dblclick", IMG_WRAPPER, function () {
         if ($(this).is(IMG_WRAPPER) && $(this).children().hasClass("active-playlist") && $(this).children().hasClass("enabled")) {
             trackEvent("event", "Playlist", "view", "View", 2);
             $(VIEW_VIDS).trigger("click");
@@ -1552,7 +1552,7 @@ $(document).ready(function() {
     });
 
     //VIEW PLAYLIST VIDEOS
-    $(document).on("click", VIEW_VIDS, function(event) {
+    $(document).on("click", VIEW_VIDS, function (event) {
 
         if (navigator.onLine && $(this).css("cursor") !== "wait") {
 
@@ -1606,7 +1606,7 @@ $(document).ready(function() {
         }
 
         $.getJSON("https://noembed.com/embed", { format: "json", url: lnk })
-            .done(function(res) {
+            .done(function (res) {
 
                 delete sessionStorage.video;
 
@@ -1685,7 +1685,7 @@ $(document).ready(function() {
     }
 
     //DELETE PLAYLIST
-    $(DELETE_DELETE).click(function() {
+    $(DELETE_DELETE).click(function () {
         if (navigator.onLine) {
 
             if ($(this).css("cursor") !== "wait" && $(DELETE_TITLE).text() === "Delete Playlist") {
@@ -1695,7 +1695,7 @@ $(document).ready(function() {
 
                 $(PLAYLIST_ACTIVE).next().next().fadeOut("normal");
 
-                $(PLAYLIST_ACTIVE).fadeOut("normal", function() {
+                $(PLAYLIST_ACTIVE).fadeOut("normal", function () {
 
                     var pg, temp = JSON.parse(localStorage.playlist);
 
@@ -1740,7 +1740,7 @@ $(document).ready(function() {
     });
 
     //DELETE PLAYLIST VIDEO
-    $(DELETE_DELETE).click(function() {
+    $(DELETE_DELETE).click(function () {
 
         if (navigator.onLine) {
 
@@ -1780,7 +1780,7 @@ $(document).ready(function() {
 
                     $(ACTIVE_PLAYLIST_VIDEO).children().next().next().fadeOut("normal");
 
-                    $(ACTIVE_PLAYLIST_VIDEO).fadeOut("normal", function() {
+                    $(ACTIVE_PLAYLIST_VIDEO).fadeOut("normal", function () {
 
                         arr_id.splice(index, 1);
                         send.playlist = arr_id.join(",");
@@ -1791,11 +1791,11 @@ $(document).ready(function() {
                             send.thumbnails = temp.join(",");
                         }
 
-                        chrome.runtime.getBackgroundPage(function(bg) {
+                        chrome.runtime.getBackgroundPage(function (bg) {
                             bg.chromeExtension.createPlaylist(send);
                         });
 
-                        chrome.runtime.onMessage.addListener(function(message, messageSender, sendResponse) {
+                        chrome.runtime.onMessage.addListener(function (message, messageSender, sendResponse) {
 
                             chrome.runtime.onMessage.removeListener(arguments.callee);
 
@@ -1841,7 +1841,7 @@ $(document).ready(function() {
     });
 
     //CREATE PLAYLIST | EDIT PLAYLIST
-    $(MAIN_POPUP_CREATE).click(function() {
+    $(MAIN_POPUP_CREATE).click(function () {
 
         if (navigator.onLine) {
 
@@ -1908,7 +1908,7 @@ $(document).ready(function() {
                             objVid = JSON.parse(sessionStorage.video),
                             objVidKeys = Object.keys(objVid);
 
-                        objVidKeys.forEach(function(key, index) {
+                        objVidKeys.forEach(function (key, index) {
                             linkArr.push(key);
                             titleArr.push(objVid[objVidKeys[index]].video_title);
                             author_nameArr.push(objVid[objVidKeys[index]].author_name);
@@ -2102,13 +2102,13 @@ $(document).ready(function() {
 
             if (permit === "UPDATE") {
 
-                $(OVERLAY).hide("normal", function() {
+                $(OVERLAY).hide("normal", function () {
 
-                    chrome.runtime.getBackgroundPage(function(bg) {
+                    chrome.runtime.getBackgroundPage(function (bg) {
                         bg.chromeExtension.createPlaylist(send);
                     });
 
-                    chrome.runtime.onMessage.addListener(function(message, messageSender, sendResponse) {
+                    chrome.runtime.onMessage.addListener(function (message, messageSender, sendResponse) {
 
                         chrome.runtime.onMessage.removeListener(arguments.callee);
 
@@ -2204,7 +2204,7 @@ $(document).ready(function() {
     });
 
     //CREATE PLAYLIST POPUP | EDIT PLAYLIST POPUP | EDIT VIDEO POPUP
-    $(document).on("click", HEADER_RIGHT + "," + EDIT_PLAYLIST_WRAPPER, function(e) {
+    $(document).on("click", HEADER_RIGHT + "," + EDIT_PLAYLIST_WRAPPER, function (e) {
 
         var img, rep, fit;
 
@@ -2267,7 +2267,7 @@ $(document).ready(function() {
                 objVid = JSON.parse(sessionStorage.video),
                 objVidKeys = Object.keys(objVid);
 
-            objVidKeys.forEach(function(key, index) {
+            objVidKeys.forEach(function (key, index) {
                 vid_posArr.push(objVid[key].video_title);
             });
 
@@ -2296,7 +2296,7 @@ $(document).ready(function() {
             $(MAIN_POPUP_POSITION_WRAPPER).append('<div id="down-list"></div>');
             $(MAIN_POPUP_POSITION_WRAPPER).append('<div id="up-list"></div>');
 
-            setTimeout(function() {
+            setTimeout(function () {
                 if (!$(POSITION_TOTAL + " li:last").hasClass("active-element")) {
                     scrollTo(Number($(ACTIVE_ELEMENT).attr("position")));
                 } else {
@@ -2365,7 +2365,7 @@ $(document).ready(function() {
     });
 
     //CHANGE VIDEO POSITION ARROWS
-    $(document).on("click", UP_LIST + "," + DOWN_LIST, function() {
+    $(document).on("click", UP_LIST + "," + DOWN_LIST, function () {
 
         var element, active = $("li" + ACTIVE_ELEMENT),
             position = Number($(active).attr("position")),
@@ -2390,7 +2390,7 @@ $(document).ready(function() {
     });
 
     //YOUTUBE CHANNEL - NEW TAB
-    $(document).on("click", YOUTUBE_CHANNEL, function() {
+    $(document).on("click", YOUTUBE_CHANNEL, function () {
         if (navigator.onLine) {
 
             trackEvent("event", "Video", "channel", "YouTube Channel", 1);
@@ -2403,23 +2403,23 @@ $(document).ready(function() {
     });
 
     //CANCEL POPUP BUTTON
-    $(MAIN_POPUP_CANCEL).click(function() {
+    $(MAIN_POPUP_CANCEL).click(function () {
         $(MAIN_POPUP_ERROR_MESSAGE).hide();
         $(OVERLAY).fadeOut("normal");
     });
 
     //SEARCH ON FOCUS
-    $(SEARCH_PLAY + "," + SEARCH_VID).focus(function() {
+    $(SEARCH_PLAY + "," + SEARCH_VID).focus(function () {
         $(this).css("background-color", "#181818");
     });
 
     //SEARCH ON BLUR
-    $(SEARCH_PLAY + "," + SEARCH_VID).blur(function() {
+    $(SEARCH_PLAY + "," + SEARCH_VID).blur(function () {
         $(this).css("background-color", "#131313");
     });
 
     //PLAYLIST NAME | PLAYLIST DESCRIPTION - INPUT FIELDS
-    $(NEW_PLAYLIST_NAME + "," + NEW_PLAYLIST_DESCRIPTION).on("input propertychange", function() {
+    $(NEW_PLAYLIST_NAME + "," + NEW_PLAYLIST_DESCRIPTION).on("input propertychange", function () {
         if ($(this).is(NEW_PLAYLIST_NAME)) {
             if ($(this).val().length >= 0 && $(this).val().length <= 9) {
                 $(CHARACTER_NAME_LENGTH).text($(this).val().length);
@@ -2444,7 +2444,7 @@ $(document).ready(function() {
     });
 
     //IMPORT IMAGE
-    $(document).on("click", POPUP_IMAGE_IMPORT, function() {
+    $(document).on("click", POPUP_IMAGE_IMPORT, function () {
 
         if (navigator.onLine) {
 
@@ -2459,7 +2459,7 @@ $(document).ready(function() {
                     $.ajax({
                         type: "HEAD",
                         url: getImage,
-                        error: function(caller) {
+                        error: function (caller) {
                             if (caller === "SMALL_SIZE") {
                                 popupErrorMessage("IMAGE IS TOO SMALL");
                             } else if (caller === "BIG_SIZE") {
@@ -2480,7 +2480,7 @@ $(document).ready(function() {
                             }
                             resetImageState($(NEW_PLAYLIST_IMAGE), $(POPUP_IMAGE_IMPORT), $(MAIN_POPUP_PREVIEW_BOX_IMG), newImg, "REMOVE");
                         },
-                        success: function(message, text, response) {
+                        success: function (message, text, response) {
 
                             var self = this,
                                 imageType = response.getResponseHeader("Content-Type"),
@@ -2525,7 +2525,7 @@ $(document).ready(function() {
     });
 
     //THUMBNAIL SELECTION
-    $(document).on("click", THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR, function() {
+    $(document).on("click", THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR, function () {
 
         if (navigator.onLine) {
 
@@ -2552,8 +2552,8 @@ $(document).ready(function() {
                 link = video_id + "/maxresdefault.jpg";
             }
 
-            $.get(link, function() {})
-                .fail(function() {
+            $.get(link, function () { })
+                .fail(function () {
 
                     var id = $(self).attr("id");
 
@@ -2570,7 +2570,7 @@ $(document).ready(function() {
                         $(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src", "../assets/images/NoThumbFour.png");
                     }
                 })
-                .done(function() {
+                .done(function () {
                     $(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src", link);
                 });
         } else {
@@ -2579,7 +2579,7 @@ $(document).ready(function() {
     });
 
     //DELETE CONFIRMATION POPUP
-    $(document).on("click", DELETE_DELETE + "," + DELETE_CANCEL + "," + DELETE_PLAYLIST + "," + DELETE_VIDEO, function() {
+    $(document).on("click", DELETE_DELETE + "," + DELETE_CANCEL + "," + DELETE_PLAYLIST + "," + DELETE_VIDEO, function () {
         if ($(this).is(DELETE_DELETE) || $(this).is(DELETE_CANCEL)) {
             $(OVERLAY).hide("normal");
             $(DELETE_APP_POPUP).fadeOut("normal");
@@ -2600,10 +2600,10 @@ $(document).ready(function() {
     });
 
     //CLOSE POPUP ON BACKGROUND CLICK
-    $(document).on("click", POPUP_BG, function() {
+    $(document).on("click", POPUP_BG, function () {
         if ($(PREVIEW_POPUP_HOW_TO_WRAPPER).css("display") === "block") {
             $(APP_POPUP + "," + DELETE_APP_POPUP + "," + WELCOME_POPUP).hide();
-            $(OVERLAY).fadeOut("normal", function() {
+            $(OVERLAY).fadeOut("normal", function () {
                 if (!!$(PREVIEW_POPUP_HOW_TO + " iframe").length) {
                     $(PREVIEW_POPUP_HOW_TO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                 }
@@ -2627,7 +2627,7 @@ $(document).ready(function() {
         }
         if ($(PREVIEW_POPUP_VIDEO).css("display") === "block") {
             $(OVERLAY).fadeOut("normal");
-            $(PREVIEW_POPUP_VIDEO).fadeOut("normal", function() {
+            $(PREVIEW_POPUP_VIDEO).fadeOut("normal", function () {
                 if (!!$(PREVIEW_POPUP_VIDEO + " iframe").length) {
                     $(PREVIEW_POPUP_VIDEO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                 }
@@ -2636,7 +2636,7 @@ $(document).ready(function() {
     });
 
     //EMBED VIDEO IN IFRAME
-    $(document).on("click", PREVIEW_PLAYLIST_WRAPPER + "," + HOW_TO + " img", function(e) {
+    $(document).on("click", PREVIEW_PLAYLIST_WRAPPER + "," + HOW_TO + " img", function (e) {
 
         if (navigator.onLine) {
 
@@ -2691,7 +2691,7 @@ $(document).ready(function() {
     });
 
     //COPY PLAYLIST | VIDEO LINK
-    $(document).on("click", ".link-playlist-wrapper", function() {
+    $(document).on("click", ".link-playlist-wrapper", function () {
         copyToClipboard($(COPIED_LINK)[0]);
     });
 
@@ -2763,7 +2763,7 @@ $(document).ready(function() {
     }
 
     // Do not show the welcome popup again
-    $(document).on("change", WELCOME_CHECKBOX, function() {
+    $(document).on("change", WELCOME_CHECKBOX, function () {
         if ($(this).is(":checked")) {
             localStorage.setItem("welcome_box", 1);
         } else {
@@ -2772,35 +2772,36 @@ $(document).ready(function() {
     });
 
     // Select all scanned videos - TODO
-    /*$(document).on("change", "#select-all-checkbox", function() {
+    $(document).on("change", "#select-all-checkbox", function () {
         if ($(this).is(":checked")) {
-            console.log("Check!");
-            for(var i=0; i<$(".scanned-video-select").length; i++) {
-                if($(".scanned-video-select:nth(" + i + ")").attr("data-class") === "add") {
-                    if($(".scanned-video-select:nth(" + i + ")").parent().css("pointer-events") === "auto") {
-                        $(".scanned-video-select:nth(" + i + ")").click();
+            for (var i = 0; i < $(".scanned-video-select").length; i++) {
+                if ($(".scanned-video-select:nth(" + i + ")").attr("data-class") === "add") {
+                    if ($(".scanned-video-select:nth(" + i + ")").parent().css("pointer-events") === "auto") {
+                        if (Number($("#scan-total-dynamic").text().split(":")[1].trim()) < 50) {
+                            $(".scanned-video-select:nth(" + i + ")").click();
+                        }
                     }
                 }
             }
         } else {
-            for(var i=0; i<$(".scanned-video-select").length; i++) {
-                if($(".scanned-video-select:nth(" + i + ").selected").attr("data-class") === "add") {
-                    if($(".scanned-video-select:nth(" + i + ").selected")) {
-                        $(".scanned-video-select:nth(" + i + ").selected").click();
-                    }
+            for (var i = 0; i < $(".scanned-video-select").length; i++) {
+                if ($(".scanned-video-select:nth(" + i + ").selected").attr("data-class") === "add") {
+                    console.log($(".scanned-video-select:nth(" + i + ").selected").attr("data-class"));
+                    $(".scanned-video-select:nth(" + i + ").selected").trigger("mouseenter");
+                    $(".scanned-video-select:nth(" + i + ").selected").click();
                 }
             }
         }
-    });*/
+    });
 
-    $(document).on("click", WELCOME_HOW_TO_BUTTON + "," + WELCOME_CREATE_BUTTON + "," + CLOSE_WELCOME_POPUP + "," + CLOSE_HOW_TO_POPUP + "," + BACK_TO_WELCOME_HOW_TO + "," + BACK_TO_WELCOME_CREATE, function() {
+    $(document).on("click", WELCOME_HOW_TO_BUTTON + "," + WELCOME_CREATE_BUTTON + "," + CLOSE_WELCOME_POPUP + "," + CLOSE_HOW_TO_POPUP + "," + BACK_TO_WELCOME_HOW_TO + "," + BACK_TO_WELCOME_CREATE, function () {
         if ($(this).is(WELCOME_HOW_TO_BUTTON)) {
-            $(WELCOME_POPUP).fadeOut("normal", function() {
+            $(WELCOME_POPUP).fadeOut("normal", function () {
                 $(HOW_TO + " img").trigger("click");
             });
         }
         if ($(this).is(WELCOME_CREATE_BUTTON)) {
-            $(WELCOME_POPUP).fadeOut("normal", function() {
+            $(WELCOME_POPUP).fadeOut("normal", function () {
                 $(HEADER_RIGHT).trigger("click");
             });
         }
@@ -2815,7 +2816,7 @@ $(document).ready(function() {
             $(OVERLAY).fadeOut("normal");
         }
         if ($(this).is(BACK_TO_WELCOME_HOW_TO)) {
-            $(PREVIEW_POPUP_HOW_TO_WRAPPER).fadeOut("normal", function() {
+            $(PREVIEW_POPUP_HOW_TO_WRAPPER).fadeOut("normal", function () {
                 $(WELCOME_POPUP).fadeIn("normal");
                 if (!!$(PREVIEW_POPUP_HOW_TO + " iframe").length) {
                     $(PREVIEW_POPUP_HOW_TO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
@@ -2823,13 +2824,13 @@ $(document).ready(function() {
             });
         }
         if ($(this).is(BACK_TO_WELCOME_CREATE)) {
-            $(APP_POPUP).fadeOut("normal", function() {
+            $(APP_POPUP).fadeOut("normal", function () {
                 $(WELCOME_POPUP).fadeIn("normal");
             });
         }
     });
 
-    $(document).on("click", HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function() {
+    $(document).on("click", HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function () {
         var iframe = document.createElement("iframe");
         var embed = "https://www.youtube.com/embed/IrmgbdDA3yY?rel=0&amp;showinfo=0&amp;iv_load_policy=3&amp;controls=2&amp;fs=0&amp;loop=1&amp;color=white&amp;disablekb=1&amp;enablejsapi=1&amp;version=3&amp;autoplay=1";
         $(iframe).attr("width", "426");
@@ -2843,7 +2844,7 @@ $(document).ready(function() {
     });
 
     //ON MOUSEOVER
-    $(document).on("mouseover", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function() {
+    $(document).on("mouseover", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function () {
         if ($(this).is(EDIT_PLAYLIST_WRAPPER)) {
             if ($(EDIT_PLAYLIST_TEXT).is(":visible")) {
                 $(EDIT_PLAYLIST_TEXT).css("color", "#bbb999");
@@ -2937,7 +2938,7 @@ $(document).ready(function() {
     });
 
     //ON MOUSELEAVE
-    $(document).on("mouseleave", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function() {
+    $(document).on("mouseleave", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function () {
         if ($(this).is(EDIT_PLAYLIST_WRAPPER)) {
             if ($(EDIT_PLAYLIST_TEXT).is(":visible")) {
                 $(EDIT_PLAYLIST_TEXT).css("color", "#C0C0C0");
@@ -3055,12 +3056,12 @@ $(document).ready(function() {
     function hideScanner() {
         $(SCAN_ERROR_MESSAGE).hide();
         $(SCAN_PAGE_GIF).hide();
-        $(OVERLAY).fadeOut("normal", function() {
+        $(OVERLAY).fadeOut("normal", function () {
             $(SCAN_FOUND_TITLE).html("");
             $(SCAN_FOUND_AUTHOR).html("");
             $(SCAN_FOUND_SELECT).html("");
         });
-        $(SCAN_PAGE_POPUP).fadeOut("normal", function() {
+        $(SCAN_PAGE_POPUP).fadeOut("normal", function () {
             $(SCAN_PAGE_GIF).show();
         });
     }
@@ -3101,11 +3102,11 @@ $(document).ready(function() {
     //SET A 250MS TIMEOUT TO SEARCH
     function debounce(fn, delay) {
         var timer = null;
-        return function() {
+        return function () {
             var context = this,
                 args = arguments;
             clearTimeout(timer);
-            timer = setTimeout(function() {
+            timer = setTimeout(function () {
                 fn.apply(context, args);
             }, delay);
         };
@@ -3130,7 +3131,7 @@ $(document).ready(function() {
             toggleContent("HIDE");
         }
         if (!localStorage.welcome_box && localStorage.playlist === "{}") {
-            setTimeout(function() {
+            setTimeout(function () {
                 $(APP_POPUP).hide();
                 $(OVERLAY).fadeIn("slow");
                 $(WELCOME_POPUP).fadeIn("slow");
@@ -3269,9 +3270,9 @@ $(document).ready(function() {
     }
 
     //GA TRACKING CODE
-    (function(i, s, o, g, r, a, m) {
+    (function (i, s, o, g, r, a, m) {
         i.GoogleAnalyticsObject = r;
-        i[r] = i[r] || function() {
+        i[r] = i[r] || function () {
             (i[r].q = i[r].q || []).push(arguments);
         }, i[r].l = 1 * new Date();
         a = s.createElement(o),
@@ -3282,15 +3283,15 @@ $(document).ready(function() {
     })(window, document, "script", "https://www.google-analytics.com/analytics.js", "ga");
 
     ga("create", "UA-93572423-3", "auto");
-    ga("set", "checkProtocolTask", function() {});
+    ga("set", "checkProtocolTask", function () { });
     ga("require", "displayfeatures");
     trackVPage("playlist");
 
     //CALCULATE USED LS SPACE
     function getUsedLocalStorageSpace() {
-        return Object.keys(window.localStorage).map(function(key) {
+        return Object.keys(window.localStorage).map(function (key) {
             return localStorage[key].length / 1000000 + " MBs";
-        }).reduce(function(a, b) {
+        }).reduce(function (a, b) {
             return a + b;
         });
     }
