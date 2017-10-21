@@ -1129,6 +1129,9 @@ $(document).ready(function () {
   //SCAN PAGE
   $(document).on("click", SCAN_PAGE_WRAPPER, function () {
 
+    $("#select-all-checkbox").prop("checked", false);
+    $("#select-all-status").text("Select All");
+
     if (navigator.onLine && $(this).css("cursor") !== "wait") {
 
       var self = this;
@@ -1166,7 +1169,7 @@ $(document).ready(function () {
             }
 
             //RESET STYLING STATE
-            $(SCAN_NUM_TEXT).css("margin-left", "29px");
+            $(SCAN_NUM_TEXT).css("margin-left", "165px");
             $(SCAN_TOTAL_TEXT).css("margin-left", "-8px");
             $(SCAN_TOTAL_DYNAMIC).css("margin-left", "67px");
 
@@ -2788,6 +2791,7 @@ $(document).ready(function () {
           }
         }
       }
+      $("#select-all-status").text("Unselect All");
     } else {
       for (var i = 0; i < $(".scanned-video-select").length; i++) {
         if ($(".scanned-video-select:nth(" + i + ").selected").attr("data-class") === "add") {
@@ -2797,6 +2801,7 @@ $(document).ready(function () {
           $(".scanned-video-select:nth(" + i + ")").trigger("mouseleave");
         }
       }
+      $("#select-all-status").text("Select All");
     }
   });
 
