@@ -1289,7 +1289,6 @@ body {
 
 #scan-num-found {
     width: auto;
-    height: 30px;
     top: 100px;
     background-color: #333333;
     font-size: 12px;
@@ -1298,13 +1297,12 @@ body {
     font-weight: 300;
     color: #C0C0C0;
     text-align: left;
-    left: 376px;
+    left: 375px;
     position: fixed;
 }
 
 #scan-num-text {
     width: auto;
-    height: 30px;
     top: 100px;
     left: 230px;
     background-color: #333333;
@@ -1319,9 +1317,8 @@ body {
 
 #scan-total-text {
     width: auto;
-    height: 30px;
     top: 100px;
-    left: 440px;
+    left: 441px;
     line-height: 22.5px;
     font-family: "Montserrat", sans-serif;
     font-weight: 300;
@@ -1334,9 +1331,8 @@ body {
 
 #scan-total-dynamic {
     width: auto;
-    height: 30px;
     top: 103px;
-    left: 520px;
+    left: 517px;
     font-family: "Montserrat", sans-serif;
     font-weight: 300;
     font-size: 12px;
@@ -1348,7 +1344,6 @@ body {
 
 #scan-total-static {
     width: auto;
-    height: 30px;
     top: 103px;
     left: 543px;
     font-family: "Montserrat", sans-serif;
