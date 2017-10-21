@@ -1169,9 +1169,9 @@ $(document).ready(function () {
             }
 
             //RESET STYLING STATE
-            $(SCAN_NUM_TEXT).css("margin-left", "165px");
-            $(SCAN_TOTAL_TEXT).css("margin-left", "-8px");
-            $(SCAN_TOTAL_DYNAMIC).css("margin-left", "67px");
+            $(SCAN_NUM_TEXT).css("left", "230px");
+            $(SCAN_TOTAL_TEXT).css("left", "440px");
+            $(SCAN_TOTAL_DYNAMIC).css("left", "519px");
 
             scanAPI(scannedLinks.length, 0);
           } else {
@@ -1213,8 +1213,8 @@ $(document).ready(function () {
       tv = "0" + tv;
     }
 
-    $(SCAN_TOTAL_TEXT).html("Playlist total");
-    $(SCAN_TOTAL_DYNAMIC).html(":&nbsp;" + tv);
+    $(SCAN_TOTAL_TEXT).html("Playlist Total :");
+    $(SCAN_TOTAL_DYNAMIC).html("&nbsp;" + tv);
     $(SCAN_TOTAL_STATIC).html("of&nbsp;&nbsp;50");
 
     var temp = num;
@@ -1224,24 +1224,9 @@ $(document).ready(function () {
     }
 
     $(SCAN_NUM_FOUND).text(temp);
-    $(SCAN_NUM_TEXT).text(" YouTube videos found");
-
-    if (Number($(SCAN_NUM_FOUND).text()) > 99) {
-      $(SCAN_NUM_TEXT).css("margin-left", "37px");
-    }
-
-    if (Number($(SCAN_NUM_FOUND).text()) > 999) {
-      $(SCAN_NUM_TEXT).css("margin-left", "45px");
-    }
+    $(SCAN_NUM_TEXT).text("YouTube Videos Found : ");
 
     var txt = $(SCAN_NUM_TEXT).text();
-
-    if (scan_not_found.length > 0 && scan_not_found.length < 10) {
-      var len = "0" + scan_not_found.length;
-      $(SCAN_NUM_TEXT).text(txt + " - " + len + " not included");
-    } else if (scan_not_found.length >= 10) {
-      $(SCAN_NUM_TEXT).text(txt + " - " + scan_not_found.length + " not included");
-    }
 
     var s_link = scannedLinks[num];
 
@@ -1376,11 +1361,11 @@ $(document).ready(function () {
 
       //WINDOWS STYLING FIX
       if (/WIN/i.test(navigator.platform) && parseValue($(SCAN_TOTAL_DYNAMIC).text()) >= 10 && parseValue($(SCAN_TOTAL_DYNAMIC).text()) <= 19) {
-        $(SCAN_TOTAL_TEXT).css("margin-left", "-3px");
-        $(SCAN_TOTAL_DYNAMIC).css("margin-left", "70px");
+        $(SCAN_TOTAL_TEXT).css("margin-left", "445px");
+        $(SCAN_TOTAL_DYNAMIC).css("margin-left", "522px");
       } else {
-        $(SCAN_TOTAL_TEXT).css("margin-left", "-8px");
-        $(SCAN_TOTAL_DYNAMIC).css("margin-left", "67px");
+        $(SCAN_TOTAL_TEXT).css("margin-left", "440px");
+        $(SCAN_TOTAL_DYNAMIC).css("margin-left", "519px");
       }
     }
   });
@@ -2783,7 +2768,7 @@ $(document).ready(function () {
       for (var i = 0; i < $(".scanned-video-select").length; i++) {
         if ($(".scanned-video-select:nth(" + i + ")").attr("data-class") === "add") {
           if ($(".scanned-video-select:nth(" + i + ")").parent().css("pointer-events") === "auto") {
-            if (Number($("#scan-total-dynamic").text().split(":")[1].trim()) < 50) {
+            if (Number($("#scan-total-dynamic").text().trim()) < 50) {
               $(".scanned-video-select:nth(" + i + ")").trigger("mouseover");
               $(".scanned-video-select:nth(" + i + ")").trigger("click");
               $(".scanned-video-select:nth(" + i + ")").trigger("mouseleave");
