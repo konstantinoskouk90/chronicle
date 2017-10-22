@@ -1,4 +1,3 @@
-/* jshint esnext: true */
 $(document).ready(function () {
 
   //CONSTANTS
@@ -125,7 +124,9 @@ $(document).ready(function () {
     SCAN_UPDATE = "#scan-update",
     SEARCH_PLAY = "#search-playlist",
     SEARCH_VID = "#search-video",
-    SELECT_ALL_WRAPPER = ".select-all-checkbox-wrapper",
+    SELECT_ALL_STATUS = "#select-all-status",
+    SELECT_ALL_CHECKBOX = "#select-all-checkbox",
+    SELECT_ALL_CHECKBOX_WRAPPER = ".select-all-checkbox-wrapper",
     THUMBNAIL_POPUP = ".main-popup-thumbnail",
     THUMBNAIL_POPUP_WRAPPER = ".main-popup-thumbnail-wrapper",
     THUMB_FOUR = "#thumb-four",
@@ -1129,8 +1130,9 @@ $(document).ready(function () {
   //SCAN PAGE
   $(document).on("click", SCAN_PAGE_WRAPPER, function () {
 
-    $("#select-all-checkbox").prop("checked", false);
-    $("#select-all-status").text("Select All");
+    $(SELECT_ALL_CHECKBOX_WRAPPER).attr("title", "");
+    $(SELECT_ALL_CHECKBOX).prop({ checked: false, disabled: "disabled" });
+    $(SELECT_ALL_STATUS).text("Select All");
 
     if (navigator.onLine && $(this).css("cursor") !== "wait") {
 
@@ -1169,7 +1171,9 @@ $(document).ready(function () {
             }
 
             //RESET STYLING STATE
+            $(SELECT_ALL_CHECKBOX_WRAPPER).show();
             $(SCAN_NUM_TEXT).css("left", "230px");
+            $(SCAN_NUM_FOUND).css("left", "375px");
             $(SCAN_TOTAL_TEXT).css("left", "441px");
             $(SCAN_TOTAL_DYNAMIC).css("left", "517px");
 
@@ -1179,6 +1183,8 @@ $(document).ready(function () {
               $(SCAN_PAGE_MAIN).css("border-bottom", "1px solid #404040");
             }
 
+            $(SELECT_ALL_CHECKBOX_WRAPPER).hide();
+            $(SCAN_NUM_FOUND).css("left", "100px");
             $(SCAN_NUM_FOUND).text("Sorry, no YouTube videos found..");
             $(SCAN_PAGE_GIF).hide("fast");
           }
@@ -1321,7 +1327,13 @@ $(document).ready(function () {
     $(SCAN_FOUND_SELECT).append('<div class="popup-select-wrapper"></div>');
     $(POPUP_SELECT_WRAPPER + ":nth(" + num + ")").append('<div class="scanned-video-select" data-id="' + ytID + '" data-class="' + state + '">ADD</div>');
 
-    $(SELECT_ALL_WRAPPER).show();
+    if (parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim()) < 50) {
+      $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "pointer");
+      $(SELECT_ALL_CHECKBOX).prop("disabled", "");
+    } else {
+      $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "default");
+      $(SELECT_ALL_CHECKBOX_WRAPPER).attr("title", "Cannot Select - Video Limit Reached");
+    }
   }
 
   //SELECT SCANNED RESULT
@@ -2762,30 +2774,31 @@ $(document).ready(function () {
     }
   });
 
-  // Select all scanned videos - TODO
-  $(document).on("change", "#select-all-checkbox", function () {
+  // Select all scanned videos
+  $(document).on("change", SELECT_ALL_CHECKBOX, function () {
     if ($(this).is(":checked")) {
-      for (var i = 0; i < $(".scanned-video-select").length; i++) {
-        if ($(".scanned-video-select:nth(" + i + ")").attr("data-class") === "add") {
-          if ($(".scanned-video-select:nth(" + i + ")").parent().css("pointer-events") === "auto") {
-            if (Number($("#scan-total-dynamic").text().split(":")[1].trim()) < 50 && !$(".scanned-video-select:nth(" + i + ")").hasClass("selected")) {
-              $(".scanned-video-select:nth(" + i + ")").trigger("mouseover");
-              $(".scanned-video-select:nth(" + i + ")").trigger("click");
-              $(".scanned-video-select:nth(" + i + ")").trigger("mouseleave");
+      for (var i = 0; i < $(SCANNED_VIDEO_SELECT).length; i++) {
+        if ($(SCANNED_VIDEO_SELECT + ":nth(" + i + ")").attr("data-class") === "add") {
+          if ($(SCANNED_VIDEO_SELECT + ":nth(" + i + ")").parent().css("pointer-events") === "auto") {
+            if (parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim()) < 50
+              && !$(SCANNED_VIDEO_SELECT + ":nth(" + i + ")").hasClass("selected")) {
+              $(SCANNED_VIDEO_SELECT + ":nth(" + i + ")").trigger("mouseover");
+              $(SCANNED_VIDEO_SELECT + ":nth(" + i + ")").trigger("click");
+              $(SCANNED_VIDEO_SELECT + ":nth(" + i + ")").trigger("mouseleave");
             }
           }
         }
       }
-      $("#select-all-status").text("Unselect All");
+      $(SELECT_ALL_STATUS).text("Unselect All");
     } else {
-      for (var i = 0; i < $(".scanned-video-select").length; i++) {
-        if ($(".scanned-video-select:nth(" + i + ").selected").attr("data-class") === "add") {
-          $(".scanned-video-select:nth(" + i + ").selected").trigger("mouseover");
-          $(".scanned-video-select:nth(" + i + ").selected").trigger("click");
-          $(".scanned-video-select:nth(" + i + ")").trigger("mouseleave");
+      for (var i = 0; i < $(SCANNED_VIDEO_SELECT).length; i++) {
+        if ($(SCANNED_VIDEO_SELECT + ":nth(" + i + ").selected").attr("data-class") === "add") {
+          $(SCANNED_VIDEO_SELECT + ":nth(" + i + ").selected").trigger("mouseover");
+          $(SCANNED_VIDEO_SELECT + ":nth(" + i + ").selected").trigger("click");
+          $(SCANNED_VIDEO_SELECT + ":nth(" + i + ")").trigger("mouseleave");
         }
       }
-      $("#select-all-status").text("Select All");
+      $(SELECT_ALL_STATUS).text("Select All");
     }
   });
 
