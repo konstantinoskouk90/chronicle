@@ -1,6 +1,6 @@
 <h1>#chronicle</h1>
 
-<h4>javaScript chrome extension built using VanillaJS / jQuery</h4>
+<h4>javascript chrome extension built using VanillaJS / jQuery</h4>
 
 <h2>Features</h2>
 

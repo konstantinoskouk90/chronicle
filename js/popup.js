@@ -2789,7 +2789,7 @@ $(document).ready(function () {
           }
         }
       }
-      $(SELECT_ALL_STATUS).text("Unselect All");
+      $(SELECT_ALL_STATUS).text("Deselect All");
     } else {
       for (var i = 0; i < $(SCANNED_VIDEO_SELECT).length; i++) {
         if ($(SCANNED_VIDEO_SELECT + ":nth(" + i + ").selected").attr("data-class") === "add") {
