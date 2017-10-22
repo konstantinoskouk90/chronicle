@@ -3,7 +3,7 @@ function scrapeDOM() {
     var id, ifrm_id, link, src, ytIDs = [],
         fb_links = document.querySelectorAll(".mbs._6m6._2cnj._5s6c a").length,
         o_links = document.querySelectorAll("a").length,
-        b_links = document.querySelectorAll(".vrhdata").length,
+        b_links = document.querySelectorAll(".sa_wrapper").length,
         iframes = document.querySelectorAll("iframe").length,
         links;
 
@@ -20,13 +20,13 @@ function scrapeDOM() {
         for (var i = 0; i < links; i++) {
 
             if (location.hostname === "www.facebook.com" && !!document.querySelectorAll(".mbs._6m6._2cnj._5s6c a").length) {
-                link = document.querySelectorAll(".mbs._6m6._2cnj._5s6c a")[i].getAttribute("onmouseover");
+                link = decodeURIComponent(document.querySelectorAll(".mbs._6m6._2cnj._5s6c a")[i].getAttribute("href"));
             } else if (!!document.querySelectorAll("a").length && location.hostname !== "www.bing.com" && !/yahoo\.com/.test(window.location.href)) {
                 link = document.querySelectorAll("a")[i].href;
             } else if (/yahoo\.com/.test(window.location.href)) {
                 link = document.querySelectorAll("a")[i].getAttribute("data-rurl");
             } else if (location.hostname === "www.bing.com") {
-                link = JSON.parse(document.querySelectorAll(".vrhdata")[i].getAttribute("vrhm")).purl;
+                link = JSON.parse(document.querySelectorAll(".sa_wrapper")[i].getAttribute("data-eventpayload")).purl;
             }
 
             if (!!link) {

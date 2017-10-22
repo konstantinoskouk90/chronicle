@@ -1066,9 +1066,15 @@ body {
 }
 
 #welcome-never-show {
-    top: 308px;
-    left: 8px;
-    font-size: 10px;
+    width: 200px;
+    height: 30px;
+    top: 2.5px;
+    left: 25px;
+    color: #C0C0C0;
+    text-align: left;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 300;
+    font-size: 11px;
     position: absolute;
 }
 
