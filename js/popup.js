@@ -1129,14 +1129,15 @@ $(document).ready(function () {
   });
 
   //ON MOUSEOVER OF SCANNED VIDEO TITLE SHOW THUMBNAIL
-  $(document).on("mouseover", ".scanned-video-title", function(e) {
-    $(".placeddiv").remove();
+  $(document).on("mouseenter", ".video-title-wrapper", debounce(function(e)  {
     // Store hovered element
     var self = this;
     // Store the element's thumbnail
-    var scanned_thumb = $(self).attr("data-thumb");
+    var scanned_thumb = $(self).children().attr("data-thumb");
 
-    var wrapper = $(".video-title-wrapper");
+    $(".placeddiv").remove();
+
+    var wrapper = $("#scan-found-title");
     var relX = e.pageX;
     var relY = e.pageY - 85;
      
@@ -1145,11 +1146,17 @@ $(document).ready(function () {
          top: relY,
          position: "fixed",
          width: "120px",
-         height: "90px"
+         height: "90px",
+         'z-index': "99999999999"
      }));
 
      $(".placeddiv").attr("src", scanned_thumb);
-  });
+  }, 250));
+
+  //ON MOUSELEAVE OF SCANNED VIDEO SECTION REMOVE THE THUMBNAIL
+  $(document).on("mouseleave", "#scan-found-title", debounce(function(e) {
+    $(".placeddiv").remove();
+  }, 250));
 
   //SCAN PAGE
   $(document).on("click", SCAN_PAGE_WRAPPER, function () {
