@@ -171,6 +171,7 @@ $(document).ready(function () {
     saveNum, scan_active_author_name = [],
     scan_active_author_url = [],
     scan_active_title = [],
+    scan_thumbnail_url = [],
     scan_not_found = [],
     scan_redirect_urls = [],
     scannedLinks = [],
@@ -1127,6 +1128,29 @@ $(document).ready(function () {
     trackVPage("playlist");
   });
 
+  //ON MOUSEOVER OF SCANNED VIDEO TITLE SHOW THUMBNAIL
+  $(document).on("mouseover", ".scanned-video-title", function(e) {
+    $(".placeddiv").remove();
+    // Store hovered element
+    var self = this;
+    // Store the element's thumbnail
+    var scanned_thumb = $(self).attr("data-thumb");
+
+    var wrapper = $(".video-title-wrapper");
+    var relX = e.pageX;
+    var relY = e.pageY - 85;
+     
+     $(wrapper).append($('<img>').addClass('placeddiv').css({
+         left: relX,
+         top: relY,
+         position: "fixed",
+         width: "120px",
+         height: "90px"
+     }));
+
+     $(".placeddiv").attr("src", scanned_thumb);
+  });
+
   //SCAN PAGE
   $(document).on("click", SCAN_PAGE_WRAPPER, function () {
 
@@ -1249,6 +1273,7 @@ $(document).ready(function () {
           scan_active_title.push(response.title);
           scan_active_author_name.push(response.author_name);
           scan_active_author_url.push(response.author_url);
+          scan_thumbnail_url.push(response.thumbnail_url);
           scan_redirect_urls.push(s_link);
         } else {
           scan_not_found.push(response.error);
@@ -1267,7 +1292,14 @@ $(document).ready(function () {
 
           for (var i = 0; i < scannedLinks.length; i++) {
             if (scan_active_title[i] !== undefined) {
-              renderScannedUI(i, scan_redirect_urls[i], scan_active_title[i], scan_active_author_name[i], scan_active_author_url[i]);
+              renderScannedUI(
+                i, 
+                scan_redirect_urls[i], 
+                scan_active_title[i], 
+                scan_active_author_name[i], 
+                scan_active_author_url[i], 
+                scan_thumbnail_url[i]
+              );
             }
           }
 
@@ -1289,6 +1321,7 @@ $(document).ready(function () {
           scan_active_title = [];
           scan_active_author_name = [];
           scan_active_author_url = [];
+          scan_thumbnail_url = [];
           scan_redirect_urls = [];
           scannedLinks = [];
           scan_not_found = [];
@@ -1297,7 +1330,7 @@ $(document).ready(function () {
   }
 
   //CREATE SCANNED UI
-  function renderScannedUI(num, link, title, author, author_url) {
+  function renderScannedUI(num, link, title, author, author_url, thumbnail) {
 
     var len,
       state = "add",
@@ -1319,7 +1352,7 @@ $(document).ready(function () {
     }
 
     $(SCAN_FOUND_TITLE).append('<div class="video-title-wrapper">');
-    $(VIDEO_TITLE_WRAPPER + ":nth(" + num + ")").append('<div title="' + title.replace(/"/g, "''") + '" class="scanned-video-title ellipsis">' + title + '</div>');
+    $(VIDEO_TITLE_WRAPPER + ":nth(" + num + ")").append('<div title="' + title.replace(/"/g, "''") + '" class="scanned-video-title ellipsis" data-thumb="' + thumbnail + '">' + title + '</div>');
 
     $(SCAN_FOUND_AUTHOR).append('<div class="popup-author-wrapper">');
     $(POPUP_AUTHOR_WRAPPER + ":nth(" + num + ")").append('<div title="' + author.replace(/"/g, "''") + '" class="scanned-video-author ellipsis">' + author + '</div>');
