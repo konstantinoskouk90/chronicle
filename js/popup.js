@@ -1138,7 +1138,7 @@ $(document).ready(function () {
     $(".placeddiv").remove();
 
     var wrapper = $("#scan-found-title");
-    var relX = e.pageX;
+    var relX = e.pageX + 25;
     var relY = e.pageY - 85;
      
      $(wrapper).append($('<img>').addClass('placeddiv').css({
@@ -1151,12 +1151,12 @@ $(document).ready(function () {
      }));
 
      $(".placeddiv").attr("src", scanned_thumb);
-  }, 250));
+  }, 100));
 
   //ON MOUSELEAVE OF SCANNED VIDEO SECTION REMOVE THE THUMBNAIL
-  $(document).on("mouseleave", "#scan-found-title", debounce(function(e) {
+  $(document).on("mouseleave", ".video-title-wrapper", debounce(function(e) {
     $(".placeddiv").remove();
-  }, 250));
+  }, 100));
 
   //SCAN PAGE
   $(document).on("click", SCAN_PAGE_WRAPPER, function () {
