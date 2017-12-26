@@ -112,6 +112,7 @@ $(document).ready(function () {
     SCAN_FOUND_AUTHOR = "#scan-found-author",
     SCAN_FOUND_SELECT = "#scan-found-select",
     SCAN_FOUND_TITLE = "#scan-found-title",
+    SCAN_FOUND_THUMB = ".scan-found-thumbnail",
     SCAN_NUM_FOUND = "#scan-num-found",
     SCAN_NUM_TEXT = "#scan-num-text",
     SCAN_PAGE_GIF = ".scan-page-gif",
@@ -1129,33 +1130,49 @@ $(document).ready(function () {
   });
 
   //ON MOUSEOVER OF SCANNED VIDEO TITLE SHOW THUMBNAIL
-  $(document).on("mouseenter", ".video-title-wrapper", debounce(function(e)  {
-    // Store hovered element
-    var self = this;
-    // Store the element's thumbnail
-    var scanned_thumb = $(self).children().attr("data-thumb");
+  $(document).on("mouseenter", VIDEO_TITLE_WRAPPER, debounce(function(e)  {
+    
+    // When the scan popup is showing and the scan icon is hidden
+    if($(SCAN_PAGE_POPUP).css("display") === "block" 
+      && $(SCAN_PAGE_GIF).css("display") === "none"
+    ) {
 
-    $(".placeddiv").remove();
+      // Remove the previously shown thumbnail
+      $(SCAN_FOUND_THUMB).remove();
 
-    var wrapper = $("#scan-found-title");
-    var relX = e.pageX + 25;
-    var relY = e.pageY - 85;
-     
-     $(wrapper).append($('<img>').addClass('placeddiv').css({
-         left: relX,
-         top: relY,
-         position: "fixed",
-         width: "120px",
-         height: "90px",
-         'z-index': "99999999999"
-     }));
+      // Store hovered element
+      // Store thumbnail link
+      // Store wrapper element
+      // Store X mouse coordinates
+      // Store Y mouse coordinates
+      var self = this,
+        scanned_thumb = $(self).children().attr("data-thumb"),
+        wrapper = $(SCAN_FOUND_TITLE),
+        relX = e.pageX + 25,
+        relY = e.pageY - 75;
+    
+      // Dynamically append the thumbnail image element
+      $(wrapper)
+        .append($("<img>")
+        .addClass("scan-found-thumbnail")
+        .css({
+          "left": relX,
+          "top": relY,
+          "position": "fixed",
+          "width": "108px",
+          "height": "81px",
+          "z-index": "99999999999",
+          "border": "1px solid #404040"
+      }));
 
-     $(".placeddiv").attr("src", scanned_thumb);
+      // After the element is appended give it a src url
+      $(SCAN_FOUND_THUMB).attr("src", scanned_thumb);
+    }
   }, 100));
 
   //ON MOUSELEAVE OF SCANNED VIDEO SECTION REMOVE THE THUMBNAIL
-  $(document).on("mouseleave", ".video-title-wrapper", debounce(function(e) {
-    $(".placeddiv").remove();
+  $(document).on("mouseleave", VIDEO_TITLE_WRAPPER, debounce(function(e) {
+    $(SCAN_FOUND_THUMB).remove();
   }, 100));
 
   //SCAN PAGE
