@@ -24,7 +24,6 @@
 <ul>
 	<li>Add more comments to the code.</li>
 	<li>Add videos to playlist by copy-pasting URL.</li>
-	<li>Add thumbnail to scan page feature when the video results appear.</li>
 	<li>Enable sharing playlists with other users of the extension via dynamic link.</li>
 </ul>
 
