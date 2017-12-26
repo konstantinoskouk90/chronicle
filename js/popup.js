@@ -112,6 +112,7 @@ $(document).ready(function () {
     SCAN_FOUND_AUTHOR = "#scan-found-author",
     SCAN_FOUND_SELECT = "#scan-found-select",
     SCAN_FOUND_TITLE = "#scan-found-title",
+    SCAN_FOUND_THUMB = ".scan-found-thumbnail",
     SCAN_NUM_FOUND = "#scan-num-found",
     SCAN_NUM_TEXT = "#scan-num-text",
     SCAN_PAGE_GIF = ".scan-page-gif",
@@ -171,6 +172,7 @@ $(document).ready(function () {
     saveNum, scan_active_author_name = [],
     scan_active_author_url = [],
     scan_active_title = [],
+    scan_thumbnail_url = [],
     scan_not_found = [],
     scan_redirect_urls = [],
     scannedLinks = [],
@@ -1127,6 +1129,52 @@ $(document).ready(function () {
     trackVPage("playlist");
   });
 
+  //ON MOUSEOVER OF SCANNED VIDEO TITLE SHOW THUMBNAIL
+  $(document).on("mouseenter", VIDEO_TITLE_WRAPPER, debounce(function(e)  {
+    
+    // When the scan popup is showing and the scan icon is hidden
+    if($(SCAN_PAGE_POPUP).css("display") === "block" 
+      && $(SCAN_PAGE_GIF).css("display") === "none"
+    ) {
+
+      // Remove the previously shown thumbnail
+      $(SCAN_FOUND_THUMB).remove();
+
+      // Store hovered element
+      // Store thumbnail link
+      // Store wrapper element
+      // Store X mouse coordinates
+      // Store Y mouse coordinates
+      var self = this,
+        scanned_thumb = $(self).children().attr("data-thumb"),
+        wrapper = $(SCAN_FOUND_TITLE),
+        relX = e.pageX + 25,
+        relY = e.pageY - 67.5;
+    
+      // Dynamically append the thumbnail image element
+      $(wrapper)
+        .append($("<img>")
+        .addClass("scan-found-thumbnail")
+        .css({
+          "left": relX,
+          "top": relY,
+          "position": "fixed",
+          "width": "96px",
+          "height": "72px",
+          "z-index": "99999999999",
+          "border": "1px solid #404040"
+      }));
+
+      // After the element is appended give it a src url
+      $(SCAN_FOUND_THUMB).attr("src", scanned_thumb);
+    }
+  }, 100));
+
+  //ON MOUSELEAVE OF SCANNED VIDEO SECTION REMOVE THE THUMBNAIL
+  $(document).on("mouseleave", VIDEO_TITLE_WRAPPER, debounce(function(e) {
+    $(SCAN_FOUND_THUMB).remove();
+  }, 100));
+
   //SCAN PAGE
   $(document).on("click", SCAN_PAGE_WRAPPER, function () {
 
@@ -1249,6 +1297,7 @@ $(document).ready(function () {
           scan_active_title.push(response.title);
           scan_active_author_name.push(response.author_name);
           scan_active_author_url.push(response.author_url);
+          scan_thumbnail_url.push(response.thumbnail_url);
           scan_redirect_urls.push(s_link);
         } else {
           scan_not_found.push(response.error);
@@ -1267,7 +1316,14 @@ $(document).ready(function () {
 
           for (var i = 0; i < scannedLinks.length; i++) {
             if (scan_active_title[i] !== undefined) {
-              renderScannedUI(i, scan_redirect_urls[i], scan_active_title[i], scan_active_author_name[i], scan_active_author_url[i]);
+              renderScannedUI(
+                i, 
+                scan_redirect_urls[i], 
+                scan_active_title[i], 
+                scan_active_author_name[i], 
+                scan_active_author_url[i], 
+                scan_thumbnail_url[i]
+              );
             }
           }
 
@@ -1289,6 +1345,7 @@ $(document).ready(function () {
           scan_active_title = [];
           scan_active_author_name = [];
           scan_active_author_url = [];
+          scan_thumbnail_url = [];
           scan_redirect_urls = [];
           scannedLinks = [];
           scan_not_found = [];
@@ -1297,12 +1354,13 @@ $(document).ready(function () {
   }
 
   //CREATE SCANNED UI
-  function renderScannedUI(num, link, title, author, author_url) {
+  function renderScannedUI(num, link, title, author, author_url, thumbnail) {
 
     var len,
       state = "add",
       plIDs = JSON.parse(localStorage.playlist)[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")].link,
-      ytID = link.match(/watch\?v\=([^&]+)/)[1];
+      ytID = link.match(/watch\?v\=([^&]+)/)[1],
+      savedState = [];
 
     if (plIDs !== "") {
 
@@ -1318,8 +1376,11 @@ $(document).ready(function () {
       }
     }
 
+    // Store all scanned video states
+    savedState.push(state);
+
     $(SCAN_FOUND_TITLE).append('<div class="video-title-wrapper">');
-    $(VIDEO_TITLE_WRAPPER + ":nth(" + num + ")").append('<div title="' + title.replace(/"/g, "''") + '" class="scanned-video-title ellipsis">' + title + '</div>');
+    $(VIDEO_TITLE_WRAPPER + ":nth(" + num + ")").append('<div title="' + title.replace(/"/g, "''") + '" class="scanned-video-title ellipsis" data-thumb="' + thumbnail + '">' + title + '</div>');
 
     $(SCAN_FOUND_AUTHOR).append('<div class="popup-author-wrapper">');
     $(POPUP_AUTHOR_WRAPPER + ":nth(" + num + ")").append('<div title="' + author.replace(/"/g, "''") + '" class="scanned-video-author ellipsis">' + author + '</div>');
@@ -1327,10 +1388,14 @@ $(document).ready(function () {
     $(SCAN_FOUND_SELECT).append('<div class="popup-select-wrapper"></div>');
     $(POPUP_SELECT_WRAPPER + ":nth(" + num + ")").append('<div class="scanned-video-select" data-id="' + ytID + '" data-class="' + state + '">ADD</div>');
 
-    if (parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim()) < 50) {
+    if (savedState.indexOf("add") < 0) {
+      $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "default");
+      $(SELECT_ALL_CHECKBOX_WRAPPER).attr("title", "Cannot Select - All Videos Exist");
+    } else if (savedState.indexOf("add") > -1 
+      && parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim()) < 50) {
       $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "pointer");
       $(SELECT_ALL_CHECKBOX).prop("disabled", "");
-    } else {
+    } else if (parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim()) === 50) {
       $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "default");
       $(SELECT_ALL_CHECKBOX_WRAPPER).attr("title", "Cannot Select - Video Limit Reached");
     }
