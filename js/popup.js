@@ -1149,7 +1149,7 @@ $(document).ready(function () {
         scanned_thumb = $(self).children().attr("data-thumb"),
         wrapper = $(SCAN_FOUND_TITLE),
         relX = e.pageX + 25,
-        relY = e.pageY - 75;
+        relY = e.pageY - 67.5;
     
       // Dynamically append the thumbnail image element
       $(wrapper)
@@ -1159,8 +1159,8 @@ $(document).ready(function () {
           "left": relX,
           "top": relY,
           "position": "fixed",
-          "width": "108px",
-          "height": "81px",
+          "width": "96px",
+          "height": "72px",
           "z-index": "99999999999",
           "border": "1px solid #404040"
       }));
@@ -1359,7 +1359,8 @@ $(document).ready(function () {
     var len,
       state = "add",
       plIDs = JSON.parse(localStorage.playlist)[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")].link,
-      ytID = link.match(/watch\?v\=([^&]+)/)[1];
+      ytID = link.match(/watch\?v\=([^&]+)/)[1],
+      savedState = [];
 
     if (plIDs !== "") {
 
@@ -1375,6 +1376,9 @@ $(document).ready(function () {
       }
     }
 
+    // Store all scanned video states
+    savedState.push(state);
+
     $(SCAN_FOUND_TITLE).append('<div class="video-title-wrapper">');
     $(VIDEO_TITLE_WRAPPER + ":nth(" + num + ")").append('<div title="' + title.replace(/"/g, "''") + '" class="scanned-video-title ellipsis" data-thumb="' + thumbnail + '">' + title + '</div>');
 
@@ -1384,10 +1388,14 @@ $(document).ready(function () {
     $(SCAN_FOUND_SELECT).append('<div class="popup-select-wrapper"></div>');
     $(POPUP_SELECT_WRAPPER + ":nth(" + num + ")").append('<div class="scanned-video-select" data-id="' + ytID + '" data-class="' + state + '">ADD</div>');
 
-    if (parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim()) < 50) {
+    if (savedState.indexOf("add") < 0) {
+      $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "default");
+      $(SELECT_ALL_CHECKBOX_WRAPPER).attr("title", "Cannot Select - All Videos Exist");
+    } else if (savedState.indexOf("add") > -1 
+      && parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim()) < 50) {
       $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "pointer");
       $(SELECT_ALL_CHECKBOX).prop("disabled", "");
-    } else {
+    } else if (parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim()) === 50) {
       $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "default");
       $(SELECT_ALL_CHECKBOX_WRAPPER).attr("title", "Cannot Select - Video Limit Reached");
     }
