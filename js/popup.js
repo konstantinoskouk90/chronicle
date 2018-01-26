@@ -8,6 +8,7 @@ $(document).ready(function () {
     ACTIVE_PLAYLIST_VIDEO_PLAYLIST_FAVORITE = ".active-playlist-video .video-playlist-favorite",
     ACTIVE_VIDEO_IMAGE_NAME = ".active-playlist-video .video-image-name",
     ADD_VIDS = "#add-videos",
+    ADD_VIDS_MENU = ".add-video-menu",
     APP_LOGO = ".app-logo",
     APP_NAME = "#app-name",
     APP_POPUP = ".app-popup",
@@ -842,8 +843,34 @@ $(document).ready(function () {
     }
   }
 
+  //ADD VIDEO MENU - HOVER
+  $(document).on("mouseenter", ADD_VIDS + "," + ADD_VIDS_MENU, function () {
+    $(ADD_VIDS_MENU).css("display", "block");
+    $(ADD_VIDS).css({
+        "background-color": "#181818", 
+        "color": "#bbb999", 
+        "text-decoration": "underline", 
+        "border-left": "1px solid #333333", 
+        "border-right": "1px solid #333333", 
+        "margin-left": "-1px"
+      });
+  });
+
+  //ADD VIDEO MENU - LEAVE
+  // $(document).on("mouseleave", ADD_VIDS + "," + ADD_VIDS_MENU, function () {
+  //   $(ADD_VIDS_MENU).css("display", "none");
+  //   $(ADD_VIDS).css(
+  //     {
+  //       "color": "#FFFFFF"
+  //     },
+  //     {
+  //       "text-decoration": "none"
+  //     }
+  //   );
+  // });
+
   //ADD VIDEO | PLAY PLAYLIST
-  $(document).on("click", ADD_VIDS + "," + PLAY_BUTTON_WRAPPER, function () {
+  $(document).on("click", PLAY_BUTTON_WRAPPER, function () {
 
     if (navigator.onLine && $(this).css("cursor") !== "wait") {
 

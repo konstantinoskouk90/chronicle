@@ -649,8 +649,8 @@ body {
 }
 
 #add-videos {
-    width: 77.973px;
-    height: 30.616px;
+    width: 78.973px;
+    height: 36.616px;
     position: absolute;
     text-align: center;
     line-height: 30.616px;
@@ -658,6 +658,7 @@ body {
     font-weight: 300;
     font-size: 11px;
     text-decoration-color: #bbb999;
+    z-index: 9999999;
     cursor: pointer;
 }
 
@@ -673,6 +674,98 @@ body {
     font-size: 11px;
     text-decoration-color: #bbb999;
     cursor: pointer;
+}
+
+.add-video-menu {
+    width: 257.92px;
+    height: 157.08px;
+    background-color: #181818;
+    margin-top: 37px;
+    margin-left: 0px;
+    z-index: 99999999;
+    cursor: default;
+    position: fixed;
+    display: none;
+}
+
+#add-video-on-page-title {
+    width: 257.92px;
+    height: 30.616px;
+    background-color: #181818;
+    color: #C0C0C0;
+    margin-left: 0px;
+    text-align: center;
+    line-height: 30.616px;
+    cursor: default;
+    display: inherit;
+}
+
+#add-video-on-page {
+    width: 257.92px;
+    height: 30.616px;
+    background-color: #333333;
+    border-top: 1px solid #333333;
+    color: #FFFFFF;
+    margin-left: 0px;
+    text-align: center;
+    line-height: 30.616px;
+    cursor: pointer;
+    display: inherit;
+}
+
+.add-video-image {
+    padding-top: 3.5px;
+}
+
+#add-video-by-url-wrapper {
+    width: 257.92px;
+    height: 31.616px;
+    background-color: #181818;
+    margin-left: 0px;
+    display: inherit;
+}
+
+#add-video-by-url-title {
+    width: 257.92px;
+    height: 30.616px;
+    background-color: #181818;
+    color: #C0C0C0;
+    margin-left: 0px;
+    text-align: center;
+    line-height: 30.616px;
+    cursor: default;
+    display: inherit;
+}
+
+#add-video-by-url {
+    width: 243.92px;
+    height: 31.616px;
+    margin-left: 0px;
+    padding: 0 7px;
+    border-top: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-right: 0;
+    border-left: 0;
+    color: #FFFFFF;
+    background-color: #181818;
+    font-size: 10px;
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    text-align: left;
+    display: inherit;
+}
+
+#add-video-by-url-btn {
+    width: 257.92px;
+    height: 30.616px;
+    background-color: #333333;
+    border: 0;
+    color: #FFFFFF;
+    margin-left: 0px;
+    text-align: center;
+    line-height: 30.616px;
+    cursor: pointer;
+    display: inherit;
 }
 
 #plays-text {
