@@ -659,7 +659,7 @@ body {
     font-size: 11px;
     text-decoration-color: #bbb999;
     z-index: 9999999;
-    cursor: pointer;
+    cursor: default;
 }
 
 #view-videos {
