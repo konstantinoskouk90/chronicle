@@ -2512,12 +2512,12 @@ $(document).ready(function () {
   });
 
   //SEARCH ON FOCUS
-  $(SEARCH_PLAY + "," + SEARCH_VID).focus(function () {
+  $(SEARCH_PLAY + "," + SEARCH_VID + "," + ADD_VID_BY_URL_FIELD).focus(function () {
     $(this).css("background-color", "#181818");
   });
 
   //SEARCH ON BLUR
-  $(SEARCH_PLAY + "," + SEARCH_VID).blur(function () {
+  $(SEARCH_PLAY + "," + SEARCH_VID + "," + ADD_VID_BY_URL_FIELD).blur(function () {
     $(this).css("background-color", "#131313");
   });
 
