@@ -7,8 +7,12 @@ $(document).ready(function () {
     ACTIVE_PLAYLIST_VIDEOS_FIRST = ".active-playlist-videos:nth(0)",
     ACTIVE_PLAYLIST_VIDEO_PLAYLIST_FAVORITE = ".active-playlist-video .video-playlist-favorite",
     ACTIVE_VIDEO_IMAGE_NAME = ".active-playlist-video .video-image-name",
+    ADD_VID_MENU = ".add-video-menu",
+    ADD_VID_ON_PAGE = "#add-video-on-page",
+    ADD_VID_ON_PAGE_IMG = "#add-video-on-page img",
+    ADD_VID_ON_PAGE_TITLE = "#add-video-on-page-title",
+    ADD_VID_BY_URL_FIELD = "#add-video-by-url-field",
     ADD_VIDS = "#add-videos",
-    ADD_VIDS_MENU = ".add-video-menu",
     APP_LOGO = ".app-logo",
     APP_NAME = "#app-name",
     APP_POPUP = ".app-popup",
@@ -844,11 +848,12 @@ $(document).ready(function () {
   }
 
   //ADD VIDEO MENU - HOVER
-  $(document).on("mouseenter", ADD_VIDS + "," + ADD_VIDS_MENU, function () {
-    $(ADD_VIDS_MENU).css("display", "block");
+  $(document).on("mouseover", ADD_VIDS + "," + ADD_VID_MENU, function () {
+    //$(ADD_VID_BY_URL_FIELD).val("");
+    $(ADD_VID_MENU).css("display", "block");
     $(ADD_VIDS).css({
         "background-color": "#181818", 
-        "color": "#bbb999", 
+        "color": "#bbb999",
         "text-decoration": "underline", 
         "border-left": "1px solid #333333", 
         "border-right": "1px solid #333333", 
@@ -857,20 +862,20 @@ $(document).ready(function () {
   });
 
   //ADD VIDEO MENU - LEAVE
-  // $(document).on("mouseleave", ADD_VIDS + "," + ADD_VIDS_MENU, function () {
-  //   $(ADD_VIDS_MENU).css("display", "none");
-  //   $(ADD_VIDS).css(
-  //     {
-  //       "color": "#FFFFFF"
-  //     },
-  //     {
-  //       "text-decoration": "none"
-  //     }
-  //   );
-  // });
+  $(document).on("mouseleave", ADD_VIDS + "," + ADD_VID_MENU, function () {
+    $(ADD_VID_MENU).css("display", "none");
+    $(ADD_VIDS).css({
+        "background-color": "transparent", 
+        "color": "#FFFFFF",
+        "text-decoration": "none",
+        "border-left": "0",
+        "border-right": "0",
+        "margin-left": "0px"
+      });
+  });
 
   //ADD VIDEO | PLAY PLAYLIST
-  $(document).on("click", PLAY_BUTTON_WRAPPER, function () {
+  $(document).on("click", ADD_VID_ON_PAGE + "," + PLAY_BUTTON_WRAPPER, function () {
 
     if (navigator.onLine && $(this).css("cursor") !== "wait") {
 
@@ -891,7 +896,7 @@ $(document).ready(function () {
       send.playlist_description = obj.description;
       send.playlist_image = obj.image;
 
-      if ($(self).is(ADD_VIDS)) {
+      if ($(self).is(ADD_VID_ON_PAGE)) {
 
         $(self).css("cursor", "wait");
         send.playlist_action = "ADD_VIDEO";
@@ -981,7 +986,7 @@ $(document).ready(function () {
 
       chrome.runtime.getBackgroundPage(function (bg) {
 
-        if ($(self).is(ADD_VIDS)) {
+        if ($(self).is(ADD_VID_ON_PAGE)) {
           bg.chromeExtension.updatePlaylist(send);
         }
 
@@ -2944,7 +2949,7 @@ $(document).ready(function () {
   });
 
   //ON MOUSEOVER
-  $(document).on("mouseover", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function () {
+  $(document).on("mouseover", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO + "," + ADD_VID_ON_PAGE, function () {
     if ($(this).is(EDIT_PLAYLIST_WRAPPER)) {
       if ($(EDIT_PLAYLIST_TEXT).is(":visible")) {
         $(EDIT_PLAYLIST_TEXT).css("color", "#bbb999");
@@ -3035,10 +3040,14 @@ $(document).ready(function () {
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").children().next().next().css("border-color", "#C0C0C0");
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").css("cursor", "pointer");
     }
+    if($(this).is(ADD_VID_ON_PAGE)) {
+      $(ADD_VID_ON_PAGE_IMG).attr("src", "../assets/images/add-video-page-hover.png");
+      $(ADD_VID_ON_PAGE_TITLE).css("color", "#bbb999");
+    }
   });
 
   //ON MOUSELEAVE
-  $(document).on("mouseleave", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function () {
+  $(document).on("mouseleave", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO + "," + ADD_VID_ON_PAGE, function () {
     if ($(this).is(EDIT_PLAYLIST_WRAPPER)) {
       if ($(EDIT_PLAYLIST_TEXT).is(":visible")) {
         $(EDIT_PLAYLIST_TEXT).css("color", "#C0C0C0");
@@ -3119,6 +3128,10 @@ $(document).ready(function () {
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").css("border-color", "#333333");
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").children().next().next().css("border-color", "#333333");
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").css("cursor", "pointer");
+    }
+    if($(this).is(ADD_VID_ON_PAGE)) {
+      $(ADD_VID_ON_PAGE_IMG).attr("src", "../assets/images/add-video-page.png");
+      $(ADD_VID_ON_PAGE_TITLE).css("color", "#C0C0C0");
     }
   });
 

@@ -688,62 +688,69 @@ body {
     display: none;
 }
 
-#add-video-on-page-title {
-    width: 257.92px;
-    height: 30.616px;
-    background-color: #181818;
-    color: #C0C0C0;
-    margin-left: 0px;
-    text-align: center;
-    line-height: 30.616px;
-    cursor: default;
-    display: inherit;
-}
-
 #add-video-on-page {
     width: 257.92px;
-    height: 30.616px;
-    background-color: #333333;
-    border-top: 1px solid #333333;
-    color: #FFFFFF;
-    margin-left: 0px;
+    height: 61.232px;
+    border-bottom: 1px solid #333333;
     text-align: center;
-    line-height: 30.616px;
     cursor: pointer;
-    display: inherit;
+    position: absolute;
 }
 
-.add-video-image {
-    padding-top: 3.5px;
+#add-video-on-page img {
+    top: 21.308px;
+    left: 62px;
+    z-index: 9999;
+    position: absolute;
 }
 
-#add-video-by-url-wrapper {
-    width: 257.92px;
-    height: 31.616px;
-    background-color: #181818;
-    margin-left: 0px;
-    display: inherit;
-}
-
-#add-video-by-url-title {
-    width: 257.92px;
+#add-video-on-page-title {
+    width: 157.92px;
     height: 30.616px;
-    background-color: #181818;
+    top: 15.308px;
+    left: 50px;
     color: #C0C0C0;
-    margin-left: 0px;
     text-align: center;
     line-height: 30.616px;
-    cursor: default;
-    display: inherit;
+    position: absolute;
 }
 
 #add-video-by-url {
+    width: 257.92px;
+    height: 61.232px;
+    top: 62.232px;
+    border-bottom: 1px solid #333333;
+    text-align: center;
+    cursor: pointer;
+    position: absolute;
+}
+
+#add-video-by-url img {
+    top: 21.308px;
+    left: 62px;
+    z-index: 99999;
+    position: absolute;
+}
+
+#add-video-by-url-title {
+    width: 157.92px;
+    height: 30.616px;
+    top: 15.308px;
+    left: 50px;
+    line-height: 30.616px;
+    color: #C0C0C0;
+    background-color: #181818;
+    text-align: center;
+    position: absolute;
+}
+
+#add-video-by-url-field {
     width: 243.92px;
     height: 31.616px;
-    margin-left: 0px;
+    top: 125px;
     padding: 0 7px;
-    border-top: 1px solid #333333;
-    border-bottom: 1px solid #333333;
+    border-top: 0;
+    border-bottom: 0;
     border-right: 0;
     border-left: 0;
     color: #FFFFFF;
@@ -751,21 +758,8 @@ body {
     font-size: 10px;
     font-family: "Roboto", sans-serif;
     font-weight: 300;
-    text-align: left;
-    display: inherit;
-}
-
-#add-video-by-url-btn {
-    width: 257.92px;
-    height: 30.616px;
-    background-color: #333333;
-    border: 0;
-    color: #FFFFFF;
-    margin-left: 0px;
     text-align: center;
-    line-height: 30.616px;
-    cursor: pointer;
-    display: inherit;
+    position: absolute;
 }
 
 #plays-text {
