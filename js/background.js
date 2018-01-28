@@ -1,6 +1,6 @@
 /*jshint esnext: true */
 
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if ((message.from === "content")) {
         if (!!message.found) {
             delete localStorage.playlist_scanned;
@@ -14,8 +14,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 var chromeExtension = {
 
-    activeTab: function() {
-        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    activeTab: function () {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             if (!/^chrome\:\/\//.test(tabs[0].url)) {
                 chrome.tabs.executeScript(tabs[0].id, {
                     file: "js/content.js"
@@ -25,7 +25,7 @@ var chromeExtension = {
             }
         });
     },
-    constrObj: function(title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, action) {
+    constrObj: function (title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, action) {
 
         var msg, objConstr = {},
             objStored = JSON.parse(localStorage.playlist),
@@ -88,29 +88,43 @@ var chromeExtension = {
             chrome.runtime.sendMessage({ data: msg });
         }
     },
-    updatePlaylist: function(caller) {
+    updatePlaylist: function (caller) {
 
-        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
 
-            var all_IDs = JSON.parse(localStorage.playlist)[caller.playlist_name].link || "";
-            var numVids = JSON.parse(localStorage.playlist)[caller.playlist_name].videos;
+            var video_id,
+                all_IDs = JSON.parse(localStorage.playlist)[caller.playlist_name].link || "",
+                numVids = JSON.parse(localStorage.playlist)[caller.playlist_name].videos;
 
-            if (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabs[0].url)) {
+            if (caller.playlist_action === "ADD_VIDEO") {
 
-                var video_id = tabs[0].url.match(/watch.*v\=([^&]+)/)[1];
+                if (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabs[0].url) 
+                    && !caller.playlist_add_vid_by_url) {
+                    video_id = tabs[0].url.match(/watch.*v\=([^&]+)/)[1];
+                } else {
+                    video_id = /\/\/www\.youtube\.com\/watch.*v\=/.test(caller.playlist_add_vid_by_url)
+                        ? caller.playlist_add_vid_by_url.match(/watch.*v\=([^&]+)/)[1]
+                        : undefined;
+                }
 
                 if (!all_IDs.length) {
-                    caller.playlist = video_id;
-                    chromeExtension.createPlaylist(caller);
-                } else {
-                    var prod = new RegExp(video_id);
-                    if (!prod.test(all_IDs) && numVids < 50) {
-                        caller.playlist = all_IDs.match(/video_ids=(.*)/)[1] + "," + video_id;
+                    if (video_id !== undefined) {
+                        caller.playlist = video_id;
                         chromeExtension.createPlaylist(caller);
-                    } else if (numVids === 50) {
-                        chrome.runtime.sendMessage({ data: "MAX_VIDEO" });
-                    } else if (prod.test(all_IDs)) {
-                        chrome.runtime.sendMessage({ data: "VIDEO_EXISTS" });
+                    }
+                } else {
+                    if (video_id !== undefined) {
+                        var prod = new RegExp(video_id);
+                        if (!prod.test(all_IDs) && numVids < 50) {
+                            caller.playlist = all_IDs.match(/video_ids=(.*)/)[1] + "," + video_id;
+                            chromeExtension.createPlaylist(caller);
+                        } else if (numVids === 50) {
+                            chrome.runtime.sendMessage({ data: "MAX_VIDEO" });
+                        } else if (prod.test(all_IDs)) {
+                            chrome.runtime.sendMessage({ data: "VIDEO_EXISTS" });
+                        }
+                    } else {
+                        chrome.runtime.sendMessage({ data: "VIDEO_LINK_INVALID" });
                     }
                 }
             } else {
@@ -118,7 +132,7 @@ var chromeExtension = {
             }
         });
     },
-    createPlaylist: function(caller) {
+    createPlaylist: function (caller) {
 
         var title, description, img_src, link, num_vids, thumbnails, count_plays, extract_ids;
 
@@ -151,7 +165,7 @@ var chromeExtension = {
             status = "enabled";
             num_vids = extract_ids.split(",").length;
             xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     if (JSON.parse(xhr.responseText).title !== undefined) {
                         chromeExtension.constrObj(title, date_modified, description, status, encodeURIComponent(JSON.parse(xhr.responseText).title), count_plays, num_vids, thumbnails, img_src, link, caller.playlist_action);

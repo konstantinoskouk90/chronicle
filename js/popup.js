@@ -878,7 +878,7 @@ $(document).ready(function () {
   });
 
   //ADD VIDEO | PLAY PLAYLIST
-  $(document).on("click", ADD_VID_ON_PAGE + "," + PLAY_BUTTON_WRAPPER, function () {
+  $(document).on("click", ADD_VID_ON_PAGE + "," + ADD_VID_BY_URL + "," + PLAY_BUTTON_WRAPPER, function () {
 
     if (navigator.onLine && $(this).css("cursor") !== "wait") {
 
@@ -899,9 +899,14 @@ $(document).ready(function () {
       send.playlist_description = obj.description;
       send.playlist_image = obj.image;
 
-      if ($(self).is(ADD_VID_ON_PAGE)) {
+      if ($(self).is(ADD_VID_ON_PAGE) || $(self).is(ADD_VID_BY_URL)) {
 
         $(self).css("cursor", "wait");
+        
+        if($(self).is(ADD_VID_BY_URL)) {
+          send.playlist_add_vid_by_url = $(ADD_VID_BY_URL_FIELD).val();
+        }
+        
         send.playlist_action = "ADD_VIDEO";
         send.playlist_plays = pla;
 
@@ -989,7 +994,7 @@ $(document).ready(function () {
 
       chrome.runtime.getBackgroundPage(function (bg) {
 
-        if ($(self).is(ADD_VID_ON_PAGE)) {
+        if ($(self).is(ADD_VID_ON_PAGE) || $(self).is(ADD_VID_BY_URL)) {
           bg.chromeExtension.updatePlaylist(send);
         }
 
@@ -1046,7 +1051,7 @@ $(document).ready(function () {
           $(self).css("cursor", "pointer");
         }
 
-        if (data === "MAX_VIDEO" || data === "VIDEO_EXISTS" || data === "INVALID_PAGE" || data === "VIDEO_UNAVAILABLE") {
+        if (data === "MAX_VIDEO" || data === "VIDEO_EXISTS" || data === "INVALID_PAGE" || data === "VIDEO_UNAVAILABLE" || data === "VIDEO_LINK_INVALID") {
           playlistMessage(data.toLowerCase());
           $(self).css("cursor", "pointer");
         }
