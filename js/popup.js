@@ -7,6 +7,14 @@ $(document).ready(function () {
     ACTIVE_PLAYLIST_VIDEOS_FIRST = ".active-playlist-videos:nth(0)",
     ACTIVE_PLAYLIST_VIDEO_PLAYLIST_FAVORITE = ".active-playlist-video .video-playlist-favorite",
     ACTIVE_VIDEO_IMAGE_NAME = ".active-playlist-video .video-image-name",
+    ADD_VID_MENU = ".add-video-menu",
+    ADD_VID_ON_PAGE = "#add-video-on-page",
+    ADD_VID_ON_PAGE_IMG = "#add-video-on-page img",
+    ADD_VID_ON_PAGE_TITLE = "#add-video-on-page-title",
+    ADD_VID_BY_URL = "#add-video-by-url",
+    ADD_VID_BY_URL_TITLE = "#add-video-by-url-title",
+    ADD_VID_BY_URL_IMG = "#add-video-by-url img",
+    ADD_VID_BY_URL_FIELD = "#add-video-by-url-field",
     ADD_VIDS = "#add-videos",
     APP_LOGO = ".app-logo",
     APP_NAME = "#app-name",
@@ -385,6 +393,7 @@ $(document).ready(function () {
         playlistMessage("added_video");
         searchAnimation = false;
       }
+      hideAddVids();
     });
   }, 250));
 
@@ -742,6 +751,7 @@ $(document).ready(function () {
   //CREATE VIDEO UI
   function createVidDOM(n, lk, tt, an, au, vp) {
 
+    hideAddVids();
     $(SEARCH_PLAY + "," + RESULTS + "," + PLAYLIST_PLAYER + "," + TITLE_VIDEOS + "," + DESCRIPTION_VIDEOS + "," + ADD_VIDS + "," + VIEW_VIDS + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + NEW_PLAYLIST_DESCRIPTION + "," + CHARACTER_DESCRIPTION_POPUP_WRAPPER + "," + DESCRIPTION_POPUP_TITLE + "," + NAME_POPUP_WRAPPER + "," + PLAYLIST_POPUP_PREVIEW + "," + NEW_PLAYLIST_IMAGE + "," + POPUP_IMAGE_IMPORT + "," + IMAGE_POPUP_WRAPPER + "," + PAGE_CURRENT + "," + PAGE_TOTAL + "," + EDIT_PLAYLIST_TEXT + "," + LINK_PLAYLIST_TEXT + "," + PREVIEW_PLAYLIST_TEXT + "," + PLAYLIST_DETAILS_VIDEOS + "," + PLAYLIST_DETAILS_UPDATED + "," + PLAYLIST_NUM_VIDEOS + "," + MODIFIED_VIDEOS + "," + DELETE_PLAYLIST + "," + PLAYS_VIDEOS).hide();
     $(SEARCH_VID + "," + VIDEO_PLAYER + "," + VIDEO_TITLE_VIDEOS + "," + VIDEO_PLAYLIST_NAME + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + MENU_BACK_IMG + "," + VIDEO_POSITION + "," + MAIN_POPUP_POSITION + "," + MAIN_POPUP_POSITION_WRAPPER + "," + VIDEO_POPUP_PREVIEW + "," + THUMBNAIL_POPUP + "," + THUMBNAIL_POPUP_WRAPPER + "," + VID_PAGE_CURRENT + "," + VID_PAGE_TOTAL + "," + EDIT_VIDEO_TEXT + "," + LINK_VIDEO_TEXT + "," + PREVIEW_VIDEO_TEXT + "," + MENU_BACK_IMG).show();
     $(APP_LOGO).hide();
@@ -842,8 +852,47 @@ $(document).ready(function () {
     }
   }
 
+  // HIDE ADD VIDEO MENU
+  function hideAddVids() {
+    $(ADD_VID_BY_URL_FIELD).val("");
+    $(ADD_VIDS).css("color", "#ffffff");
+    $(ADD_VID_MENU).removeClass("add-video-menu-on");
+  }
+
+  //ADD VIDEO MENU - ON CLICK
+  $(document).on("click", ADD_VIDS, function () {
+    if ($(ADD_VID_MENU).css("display") === "none") {
+      $(ADD_VIDS).css("color", "#bbb999");
+      $(ADD_VID_MENU).addClass("add-video-menu-on");
+    } else {
+      hideAddVids();
+    }
+  });
+
+  //ADD VIDEO MENU - ON MOUSEENTER
+  $(document).on("mouseenter", ADD_VIDS, function () {
+    if ($(ADD_VID_MENU).css("display") === "block") {
+      $(ADD_VIDS).css("color", "#ffffff");
+      $(ADD_VIDS).css("text-decoration", "none");
+    } else {
+      $(ADD_VIDS).css("color", "#bbb999");
+      $(ADD_VIDS).css("text-decoration", "underline");
+    }
+  });
+
+  //ADD VIDEO MENU - ON MOUSELEAVE
+  $(document).on("mouseleave", ADD_VIDS, function () {
+    if ($(ADD_VID_MENU).css("display") === "block") {
+      $(ADD_VIDS).css("color", "#bbb999");
+      $(ADD_VIDS).css("text-decoration", "none");
+    } else {
+      $(ADD_VIDS).css("color", "#ffffff");
+      $(ADD_VIDS).css("text-decoration", "none");
+    }
+  });
+
   //ADD VIDEO | PLAY PLAYLIST
-  $(document).on("click", ADD_VIDS + "," + PLAY_BUTTON_WRAPPER, function () {
+  $(document).on("click", ADD_VID_ON_PAGE + "," + ADD_VID_BY_URL + "," + PLAY_BUTTON_WRAPPER, function () {
 
     if (navigator.onLine && $(this).css("cursor") !== "wait") {
 
@@ -864,9 +913,14 @@ $(document).ready(function () {
       send.playlist_description = obj.description;
       send.playlist_image = obj.image;
 
-      if ($(self).is(ADD_VIDS)) {
+      if ($(self).is(ADD_VID_ON_PAGE) || $(self).is(ADD_VID_BY_URL)) {
 
         $(self).css("cursor", "wait");
+
+        if ($(self).is(ADD_VID_BY_URL)) {
+          send.playlist_add_vid_by_url = $(ADD_VID_BY_URL_FIELD).val();
+        }
+
         send.playlist_action = "ADD_VIDEO";
         send.playlist_plays = pla;
 
@@ -954,7 +1008,7 @@ $(document).ready(function () {
 
       chrome.runtime.getBackgroundPage(function (bg) {
 
-        if ($(self).is(ADD_VIDS)) {
+        if ($(self).is(ADD_VID_ON_PAGE) || $(self).is(ADD_VID_BY_URL)) {
           bg.chromeExtension.updatePlaylist(send);
         }
 
@@ -1008,10 +1062,12 @@ $(document).ready(function () {
             playlistMessage(data.toLowerCase());
           }
 
+          hideAddVids();
+
           $(self).css("cursor", "pointer");
         }
 
-        if (data === "MAX_VIDEO" || data === "VIDEO_EXISTS" || data === "INVALID_PAGE" || data === "VIDEO_UNAVAILABLE") {
+        if (data === "MAX_VIDEO" || data === "VIDEO_EXISTS" || data === "INVALID_PAGE" || data === "INVALID_LINK" || data === "VIDEO_UNAVAILABLE") {
           playlistMessage(data.toLowerCase());
           $(self).css("cursor", "pointer");
         }
@@ -1053,6 +1109,8 @@ $(document).ready(function () {
         not_play_act = $(IMG_WRAPPER + ":nth(" + index + ")").children();
 
       if (!/active\-playlist/.test(not_play_act.attr("class"))) {
+
+        hideAddVids();
 
         $(PLAYLIST_ACTIVE).next().hide();
         $(PLAYLIST_ACTIVE).next().next().show();
@@ -1130,10 +1188,10 @@ $(document).ready(function () {
   });
 
   //ON MOUSEOVER OF SCANNED VIDEO TITLE SHOW THUMBNAIL
-  $(document).on("mouseenter", VIDEO_TITLE_WRAPPER, debounce(function(e)  {
-    
+  $(document).on("mouseenter", VIDEO_TITLE_WRAPPER, debounce(function (e) {
+
     // When the scan popup is showing and the scan icon is hidden
-    if($(SCAN_PAGE_POPUP).css("display") === "block" 
+    if ($(SCAN_PAGE_POPUP).css("display") === "block"
       && $(SCAN_PAGE_GIF).css("display") === "none"
     ) {
 
@@ -1150,20 +1208,20 @@ $(document).ready(function () {
         wrapper = $(SCAN_FOUND_TITLE),
         relX = e.pageX + 25,
         relY = e.pageY - 67.5;
-    
+
       // Dynamically append the thumbnail image element
       $(wrapper)
         .append($("<img>")
-        .addClass("scan-found-thumbnail")
-        .css({
-          "left": relX,
-          "top": relY,
-          "position": "fixed",
-          "width": "96px",
-          "height": "72px",
-          "z-index": "99999999999",
-          "border": "1px solid #404040"
-      }));
+          .addClass("scan-found-thumbnail")
+          .css({
+            "left": relX,
+            "top": relY,
+            "position": "fixed",
+            "width": "96px",
+            "height": "72px",
+            "z-index": "99999999999",
+            "border": "1px solid #404040"
+          }));
 
       // After the element is appended give it a src url
       $(SCAN_FOUND_THUMB).attr("src", scanned_thumb);
@@ -1171,7 +1229,7 @@ $(document).ready(function () {
   }, 100));
 
   //ON MOUSELEAVE OF SCANNED VIDEO SECTION REMOVE THE THUMBNAIL
-  $(document).on("mouseleave", VIDEO_TITLE_WRAPPER, debounce(function(e) {
+  $(document).on("mouseleave", VIDEO_TITLE_WRAPPER, debounce(function (e) {
     $(SCAN_FOUND_THUMB).remove();
   }, 100));
 
@@ -1187,6 +1245,8 @@ $(document).ready(function () {
       var self = this;
 
       $(self).css("cursor", "wait");
+
+      hideAddVids();
 
       chrome.runtime.getBackgroundPage(function (bg) {
         bg.chromeExtension.activeTab();
@@ -1317,11 +1377,11 @@ $(document).ready(function () {
           for (var i = 0; i < scannedLinks.length; i++) {
             if (scan_active_title[i] !== undefined) {
               renderScannedUI(
-                i, 
-                scan_redirect_urls[i], 
-                scan_active_title[i], 
-                scan_active_author_name[i], 
-                scan_active_author_url[i], 
+                i,
+                scan_redirect_urls[i],
+                scan_active_title[i],
+                scan_active_author_name[i],
+                scan_active_author_url[i],
                 scan_thumbnail_url[i]
               );
             }
@@ -1391,7 +1451,7 @@ $(document).ready(function () {
     if (savedState.indexOf("add") < 0) {
       $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "default");
       $(SELECT_ALL_CHECKBOX_WRAPPER).attr("title", "Cannot Select - All Videos Exist");
-    } else if (savedState.indexOf("add") > -1 
+    } else if (savedState.indexOf("add") > -1
       && parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim()) < 50) {
       $(SELECT_ALL_CHECKBOX_WRAPPER + " label span").css("cursor", "pointer");
       $(SELECT_ALL_CHECKBOX).prop("disabled", "");
@@ -2172,6 +2232,8 @@ $(document).ready(function () {
 
         $(OVERLAY).hide("normal", function () {
 
+          hideAddVids();
+
           chrome.runtime.getBackgroundPage(function (bg) {
             bg.chromeExtension.createPlaylist(send);
           });
@@ -2477,12 +2539,12 @@ $(document).ready(function () {
   });
 
   //SEARCH ON FOCUS
-  $(SEARCH_PLAY + "," + SEARCH_VID).focus(function () {
+  $(SEARCH_PLAY + "," + SEARCH_VID + "," + ADD_VID_BY_URL_FIELD).focus(function () {
     $(this).css("background-color", "#181818");
   });
 
   //SEARCH ON BLUR
-  $(SEARCH_PLAY + "," + SEARCH_VID).blur(function () {
+  $(SEARCH_PLAY + "," + SEARCH_VID + "," + ADD_VID_BY_URL_FIELD).blur(function () {
     $(this).css("background-color", "#131313");
   });
 
@@ -2917,7 +2979,7 @@ $(document).ready(function () {
   });
 
   //ON MOUSEOVER
-  $(document).on("mouseover", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function () {
+  $(document).on("mouseover", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO + "," + ADD_VID_ON_PAGE + "," + ADD_VID_BY_URL, function () {
     if ($(this).is(EDIT_PLAYLIST_WRAPPER)) {
       if ($(EDIT_PLAYLIST_TEXT).is(":visible")) {
         $(EDIT_PLAYLIST_TEXT).css("color", "#bbb999");
@@ -3008,10 +3070,18 @@ $(document).ready(function () {
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").children().next().next().css("border-color", "#C0C0C0");
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").css("cursor", "pointer");
     }
+    if ($(this).is(ADD_VID_ON_PAGE)) {
+      $(ADD_VID_ON_PAGE_IMG).attr("src", "../assets/images/add-video-page-hover.png");
+      $(ADD_VID_ON_PAGE_TITLE).css("color", "#bbb999");
+    }
+    if ($(this).is(ADD_VID_BY_URL)) {
+      $(ADD_VID_BY_URL_IMG).attr("src", "../assets/images/add-video-url-hover.png");
+      $(ADD_VID_BY_URL_TITLE).css("color", "#bbb999");
+    }
   });
 
   //ON MOUSELEAVE
-  $(document).on("mouseleave", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO, function () {
+  $(document).on("mouseleave", EDIT_PLAYLIST_WRAPPER + "," + LINK_PLAYLIST_WRAPPER + "," + PREVIEW_PLAYLIST_WRAPPER + "," + MENU_BACK_IMG + "," + YOUTUBE_CHANNEL + "," + DELETE_VIDEO + "," + DELETE_PLAYLIST + "," + SCAN_PAGE_WRAPPER + "," + THUMB_ONE + "," + THUMB_TWO + "," + THUMB_THREE + "," + THUMB_FOUR + "," + POPUP_IMAGE_IMPORT + "," + UP_LIST + "," + DOWN_LIST + "," + PLAY_PLAYLIST_VIDEO + "," + VIDEO_PLAYER + "," + IMG_WRAPPER + "," + VIDEO_PLAYLIST_NOT_ACTIVE + "," + PLAY_BUTTON_WRAPPER + "," + PLAYLIST_NUM_VIDEOS + "," + HOW_TO_BG_IMG + "," + HOW_TO_PLAY_VIDEO + "," + ADD_VID_ON_PAGE + "," + ADD_VID_BY_URL, function () {
     if ($(this).is(EDIT_PLAYLIST_WRAPPER)) {
       if ($(EDIT_PLAYLIST_TEXT).is(":visible")) {
         $(EDIT_PLAYLIST_TEXT).css("color", "#C0C0C0");
@@ -3092,6 +3162,14 @@ $(document).ready(function () {
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").css("border-color", "#333333");
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").children().next().next().css("border-color", "#333333");
       $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").css("cursor", "pointer");
+    }
+    if ($(this).is(ADD_VID_ON_PAGE)) {
+      $(ADD_VID_ON_PAGE_IMG).attr("src", "../assets/images/add-video-page.png");
+      $(ADD_VID_ON_PAGE_TITLE).css("color", "#C0C0C0");
+    }
+    if ($(this).is(ADD_VID_BY_URL)) {
+      $(ADD_VID_BY_URL_IMG).attr("src", "../assets/images/add-video-url.png");
+      $(ADD_VID_BY_URL_TITLE).css("color", "#C0C0C0");
     }
   });
 

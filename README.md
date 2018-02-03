@@ -22,8 +22,7 @@
 <h2>TODO - Extend functionality and scale extension</h2>
 
 <ul>
-	<li>Add more comments to the code.</li>
-	<li>Add videos to playlist by copy-pasting URL.</li>
+	<li>When editing a playlist’s details, be able to see the image link and remove the image.</li>
 	<li>Enable sharing playlists with other users of the extension via dynamic link.</li>
 </ul>
 

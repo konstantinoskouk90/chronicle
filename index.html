@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="utf-8" />
-  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" 
+    href="../css/style.css" />
   <script src="../js/jquery-3.1.1.min.js"></script>
   <script src="../js/popup.js"></script>
 </head>
@@ -15,10 +16,14 @@
     <div class="header">
       <div class="header-left">
         <div class="menu-back">
-          <img src="../assets/images/menu-back.png" width="19" height="19" />
+          <img src="../assets/images/menu-back.png" 
+            width="19" 
+            height="19" />
         </div>
         <div class="app-logo">
-          <img src="../assets/images/app-logo.png" width="18" height="18" />
+          <img src="../assets/images/app-logo.png" 
+            width="18" 
+            height="18" />
         </div>
         <span id="app-name">CHRONICLE</span>
       </div>
@@ -30,9 +35,16 @@
     <!-- MAIN -->
     <div class="main">
       <div class="wrap-search">
-        <input type="text" name="search-playlist" id="search-playlist" placeholder="Search for your playlist" autocomplete="off"
-        />
-        <input type="text" name="search-video" id="search-video" placeholder="Search for your video" autocomplete="off" />
+        <input type="text" 
+          name="search-playlist" 
+          id="search-playlist" 
+          placeholder="Search for your playlist" 
+          autocomplete="off">
+        <input type="text" 
+          name="search-video" 
+          id="search-video" 
+          placeholder="Search for your video" 
+          autocomplete="off">
       </div>
       <div class="results-header">
         <div class="results-wrapper"></div>
@@ -40,33 +52,67 @@
     </div>
     <!-- PREVIEW -->
     <div class="preview">
-      <div class="edit-playlist-wrapper" title="Edit Playlist Details">
-        <img src="../assets/images/edit-playlist.png" width="25.75" height="25.75" />
+      <div class="edit-playlist-wrapper" 
+        title="Edit Playlist Details">
+        <img src="../assets/images/edit-playlist.png" 
+          width="25.75" 
+          height="25.75">
         <span id="edit-playlist-text">Edit Details</span>
         <span id="edit-video-text">Edit Details</span>
       </div>
       <div class="link-playlist-wrapper" title="Copy Playlist Link">
-        <img src="../assets/images/link-playlist.png" width="25.75" height="25.75" />
+        <img src="../assets/images/link-playlist.png" 
+          width="25.75" 
+          height="25.75">
         <span id="link-playlist-text">Copy Link</span>
         <span id="link-video-text">Copy Link</span>
       </div>
-      <div class="preview-playlist-wrapper" title="Preview Playlist">
-        <img src="../assets/images/preview-playlist.png" width="25.75" height="25.75">
+      <div class="preview-playlist-wrapper" 
+        title="Preview Playlist">
+        <img src="../assets/images/preview-playlist.png" 
+          width="25.75" 
+          height="25.75">
         <span id="preview-playlist-text">Preview</span>
         <span id="preview-video-text">Preview</span>
       </div>
       <div id="playlist-player">
         <div id="play-button-wrapper">
-          <div class="playlist-num-videos" title="Videos">
-            <img src="../assets/images/videos.png" width="22" height="22">
+          <div class="playlist-num-videos" 
+            title="Videos">
+            <img src="../assets/images/videos.png" 
+              width="22" 
+              height="22">
             <span id="videos-text"></span>
           </div>
           <div id="play-playlist-video"></div>
         </div>
         <div class="controls-wrapper">
-          <div id="add-videos" title="Add A Video To Your Playlist While On A YouTube Video Page">Add Video</div>
-          <div id="scan-page" title="Scan The Current Page For YouTube Videos & Add Them To Your Playlist">Scan Page</div>
-          <div id="view-videos" title="View & Edit Your Playlist's Videos">View Playlist</div>
+          <div id="add-videos" 
+            title="Add A Video To Your Playlist">Add Video</div>
+          <div id="scan-page" 
+            title="Scan The Current Page For YouTube Videos & Add Them To Your Playlist">Scan Page</div>
+          <div id="view-videos" 
+            title="View & Edit Your Playlist's Videos">View Playlist</div>
+        </div>
+        <div class="add-video-menu">
+          <div id="add-video-on-page">
+            <img src="../assets/images/add-video-page.png"
+              width="17" 
+              height="17">
+            <span id="add-video-on-page-title">Add on YouTube video page</span>
+          </div>
+          <input type="text" 
+            name="add-video-by-url-field" 
+            id="add-video-by-url-field" 
+            placeholder="Insert Video URL"
+            title="e.g. https://www.youtube.com/watch?v=gOsM-DYAEhY"
+            autocomplete="off">
+          <div id="add-video-by-url">
+            <img src="../assets/images/add-video-url.png"
+              width="17" 
+              height="17">
+            <span id="add-video-by-url-title">Add by YouTube video link</span>
+          </div>
         </div>
       </div>
       <div class="video-player">
@@ -74,20 +120,33 @@
       </div>
       <div class="details-wrapper">
         <div class="title-details-wrapper">
-          <span id="playlist-name" title="Playlist Name" class="ellipsis"></span>
-          <span id="video-title" title="Video Title" class="ellipsis"></span>
+          <span id="playlist-name" 
+            title="Playlist Name" 
+            class="ellipsis"></span>
+          <span id="video-title" 
+            title="Video Title" 
+            class="ellipsis"></span>
         </div>
         <div class="description-details-wrapper">
-          <span id="playlist-description" title="Playlist Description" class="ellipsis"></span>
-          <a id="youtube-channel" title="YouTube Channel" class="ellipsis"></a>
+          <span id="playlist-description" 
+            title="Playlist Description" 
+            class="ellipsis"></span>
+          <a id="youtube-channel" 
+            title="YouTube Channel" 
+            class="ellipsis"></a>
         </div>
         <div class="video-details-wrapper">
-          <span id="updated-text" title="Last Updated"></span>
-          <span id="playlist-name-video" title="Playlist Name" class="ellipsis"></span>
+          <span id="updated-text" 
+            title="Last Updated"></span>
+          <span id="playlist-name-video" 
+            title="Playlist Name" 
+            class="ellipsis"></span>
         </div>
         <div class="position-wrapper">
-          <span id="plays-text" title="Play Count"></span>
-          <span id="video-position" title="Video Position"></span>
+          <span id="plays-text" 
+            title="Play Count"></span>
+          <span id="video-position" 
+            title="Video Position"></span>
         </div>
         <div class="delete-wrapper">
           <span id="delete-playlists">Delete Playlist</span>
@@ -98,25 +157,39 @@
     <!-- FOOTER -->
     <div class="footer">
       <div class="how-to-wrapper">
-        <img src="../assets/images/how-to.png" title="How To" width="19.75" height="19.75" />
+        <img src="../assets/images/how-to.png" 
+          title="How To" 
+          width="19.75" 
+          height="19.75" />
       </div>
       <div class="navigation-wrapper">
         <div class="arrow-bb" title="First Page">
-          <img src="../assets/images/arrow-bb.png" width="23.25" height="15.5">
+          <img src="../assets/images/arrow-bb.png" 
+            width="23.25" 
+            height="15.5">
         </div>
-        <div class="arrow-b" title="Previous Page">
-          <img src="../assets/images/arrow-b.png" width="15.5" height="15.5">
+        <div class="arrow-b" 
+          title="Previous Page">
+          <img src="../assets/images/arrow-b.png" 
+            width="15.5" 
+            height="15.5">
         </div>
         <div id="page-current"></div>
         <div id="vid-page-current"></div>
         <div id="page-out-of">of</div>
         <div id="page-total"></div>
         <div id="vid-page-total"></div>
-        <div class="arrow-f" title="Next Page">
-          <img src="../assets/images/arrow-f.png" width="15.5" height="15.5">
+        <div class="arrow-f" 
+          title="Next Page">
+          <img src="../assets/images/arrow-f.png" 
+            width="15.5" 
+            height="15.5">
         </div>
-        <div class="arrow-ff" title="Last Page">
-          <img src="../assets/images/arrow-ff.png" width="23.25" height="15.5">
+        <div class="arrow-ff" 
+          title="Last Page">
+          <img src="../assets/images/arrow-ff.png" 
+            width="23.25" 
+            height="15.5">
         </div>
       </div>
     </div>
@@ -126,7 +199,10 @@
     <div id="popup-bg"></div>
     <div class="welcome-popup">
       <div class="header-welcome">
-        <img class="popup-video-close" src="../assets/images/close.png" width="12" height="12">
+        <img class="popup-video-close" 
+          src="../assets/images/close.png" 
+          width="12" 
+          height="12">
         <span id="welcome-popup-title">Welcome</span>
       </div>
       <div class="main-welcome">
@@ -172,17 +248,34 @@
     </div>
     <div class="preview-popup-how-to-wrapper">
       <div class="header-preview-popup-video">
-        <img class="popup-video-back" src="../assets/images/back.png" width="16" height="16">
-        <img class="popup-video-close" src="../assets/images/close.png" width="12" height="12">
+        <img class="popup-video-back" 
+          src="../assets/images/back.png" 
+          width="16" 
+          height="16">
+        <img class="popup-video-close" 
+          src="../assets/images/close.png" 
+          width="12" 
+          height="12">
         <span id="how-to-title">How To</span>
       </div>
       <div class="preview-popup-how-to">
-        <img id="how-to-play-video" src="../assets/images/play-video.png" width="46.54" height="32.77">
-        <img id="how-to-bg-image" src="../assets/images/how-to-thumbnail.png" width="426" height="240">
+        <img id="how-to-play-video" 
+          src="../assets/images/play-video.png" 
+          width="46.54" 
+          height="32.77">
+        <img id="how-to-bg-image" 
+          src="../assets/images/how-to-thumbnail.png" 
+          width="426" 
+          height="240">
       </div>
     </div>
     <div class="preview-popup-video">
-      <iframe id="video-frame" width="426" height="240" src="" frameborder="0"></iframe>
+      <iframe id="video-frame" 
+        width="426" 
+        height="240" 
+        src="" 
+        frameborder="0">
+      </iframe>
     </div>
     <div class="scan-page-popup">
       <div class="header-scan">
@@ -196,7 +289,9 @@
       <div class="scan-page-main">
         <div class="scan-page-gif">
           <div class="scan-gif-popup">
-            <img src="../assets/images/scan-page.gif" width="57.5" height="57.5" />
+            <img src="../assets/images/scan-page.gif" 
+              width="57.5" 
+              height="57.5">
             <span id="scan-page-text">Scanning</span>
           </div>
         </div>
@@ -205,7 +300,9 @@
         <div id="scan-found-select"></div>
       </div>
       <div class="select-all-checkbox-wrapper" title>
-        <input type="checkbox" id="select-all-checkbox" disabled="disabled" />
+        <input type="checkbox" 
+          id="select-all-checkbox" 
+          disabled="disabled">
         <label for="select-all-checkbox">
           <span></span>
           <div id="select-all-status">Select All</div>
@@ -217,7 +314,10 @@
     </div>
     <div class="app-popup">
       <div class="header-app-popup">
-        <img class="popup-video-back" src="../assets/images/back.png" width="16" height="16">
+        <img class="popup-video-back" 
+          src="../assets/images/back.png" 
+          width="16" 
+          height="16">
         <span id="title-app-popup"></span>
       </div>
       <div class="main-app-popup">
@@ -228,7 +328,11 @@
           <div id="character-name-length"></div>
           <div id="character-name-limit">/ 40</div>
         </div>
-        <input id="new-playlist-name" type="text" maxlength="40" value="New Playlist" placeholder="Playlist name" />
+        <input id="new-playlist-name" 
+          type="text" 
+          maxlength="40" 
+          value="New Playlist" 
+          placeholder="Playlist name">
         <div class="main-popup-description">
           <span>Description</span>
         </div>
@@ -239,7 +343,11 @@
           <div id="character-description-length"></div>
           <div id="character-description-limit">/ 80</div>
         </div>
-        <textarea id="new-playlist-description" type="text" maxlength="80" placeholder="Give your playlist a description."></textarea>
+        <textarea id="new-playlist-description" 
+          type="text" 
+          maxlength="80" 
+          placeholder="Give your playlist a description.">
+        </textarea>
         <div class="main-popup-position-wrapper">
           <div id="position-active"></div>
           <div id="position-total"></div>
@@ -250,12 +358,18 @@
         <div class="main-popup-thumbnail-wrapper">
           <span>Thumbnail</span>
         </div>
-        <textarea id="new-playlist-image" placeholder="Paste your image link - e.g. https://example.com/a.jpg Supports: gif/jpeg/jpg/png"></textarea>
+        <textarea id="new-playlist-image" 
+          placeholder="Paste your image link - e.g. https://example.com/a.jpg Supports: gif/jpeg/jpg/png">
+        </textarea>
         <div class="main-popup-thumbnail">
-          <li id="thumb-one" title="Medium Quality">MQ</li>
-          <li id="thumb-two" title="High Quality">HQ</li>
-          <li id="thumb-three" title="Standard Definition">SD</li>
-          <li id="thumb-four" title="Maximum Resolution">MR</li>
+          <li id="thumb-one" 
+            title="Medium Quality">MQ</li>
+          <li id="thumb-two" 
+            title="High Quality">HQ</li>
+          <li id="thumb-three" 
+            title="Standard Definition">SD</li>
+          <li id="thumb-four" 
+            title="Maximum Resolution">MR</li>
         </div>
         <div id="main-popup-image-import">IMPORT</div>
         <div class="main-popup-playlist-preview">
@@ -276,7 +390,9 @@
   <!-- AJAX LOADER -->
   <div class="overlay-ajax-loading">
     <div class="popup-loading-wrapper">
-      <img src="../assets/images/ajax-loader.gif" width="50" height="50" />
+      <img src="../assets/images/ajax-loader.gif" 
+        width="50" 
+        height="50" />
       <span id="popup-loading-text">Loading</span>
     </div>
   </div>
