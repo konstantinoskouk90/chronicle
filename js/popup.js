@@ -393,6 +393,7 @@ $(document).ready(function () {
         playlistMessage("added_video");
         searchAnimation = false;
       }
+      hideAddVids();
     });
   }, 250));
 
