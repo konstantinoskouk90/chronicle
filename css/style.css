@@ -87,7 +87,6 @@
     text-overflow: ellipsis;
 }
 
-#add-videos:hover,
 #view-videos:hover,
 #scan-page:hover {
     color: #bbb999;
@@ -689,6 +688,15 @@ body {
     cursor: default;
     position: fixed;
     display: none;
+}
+
+.add-video-menu-on {
+    background-color: #181818;
+    text-decoration: underline;
+    border-left: 1px solid #333333;
+    border-right: 1px solid #333333;
+    margin-left: -1px;
+    display: block;
 }
 
 #add-video-on-page {
@@ -2032,7 +2040,6 @@ input[type="checkbox"]:checked + label span {
 #main-popup-error-message {
     width: 400px;
     height: 15px;
-    padding: 0 7px;
     position: absolute;
     top: 385px;
     background-color: #434343;

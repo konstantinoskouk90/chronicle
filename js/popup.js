@@ -853,32 +853,40 @@ $(document).ready(function () {
 
   // HIDE ADD VIDEO MENU
   function hideAddVids() {
-    $(ADD_VID_MENU).css("display", "none");
     $(ADD_VID_BY_URL_FIELD).val("");
-    $(ADD_VIDS).css({
-      "background-color": "transparent",
-      "color": "#FFFFFF",
-      "text-decoration": "none",
-      "border-left": "0",
-      "border-right": "0",
-      "margin-left": "0px"
-    });
+    $(ADD_VIDS).css("color", "#ffffff");
+    $(ADD_VID_MENU).removeClass("add-video-menu-on");
   }
 
-  //ADD VIDEO MENU
+  //ADD VIDEO MENU - ON CLICK
   $(document).on("click", ADD_VIDS, function () {
     if ($(ADD_VID_MENU).css("display") === "none") {
-      $(ADD_VIDS).css({
-        "background-color": "#181818",
-        "color": "#bbb999",
-        "text-decoration": "underline",
-        "border-left": "1px solid #333333",
-        "border-right": "1px solid #333333",
-        "margin-left": "-1px"
-      });
-      $(ADD_VID_MENU).css("display", "block");
+      $(ADD_VIDS).css("color", "#bbb999");
+      $(ADD_VID_MENU).addClass("add-video-menu-on");
     } else {
       hideAddVids();
+    }
+  });
+
+  //ADD VIDEO MENU - ON MOUSEENTER
+  $(document).on("mouseenter", ADD_VIDS, function () {
+    if ($(ADD_VID_MENU).css("display") === "block") {
+      $(ADD_VIDS).css("color", "#ffffff");
+      $(ADD_VIDS).css("text-decoration", "none");
+    } else {
+      $(ADD_VIDS).css("color", "#bbb999");
+      $(ADD_VIDS).css("text-decoration", "underline");
+    }
+  });
+
+  //ADD VIDEO MENU - ON MOUSELEAVE
+  $(document).on("mouseleave", ADD_VIDS, function () {
+    if ($(ADD_VID_MENU).css("display") === "block") {
+      $(ADD_VIDS).css("color", "#bbb999");
+      $(ADD_VIDS).css("text-decoration", "none");
+    } else {
+      $(ADD_VIDS).css("color", "#ffffff");
+      $(ADD_VIDS).css("text-decoration", "none");
     }
   });
 
