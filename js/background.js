@@ -96,10 +96,13 @@ var chromeExtension = {
                 all_IDs = JSON.parse(localStorage.playlist)[caller.playlist_name].link || "",
                 numVids = JSON.parse(localStorage.playlist)[caller.playlist_name].videos;
 
-            if (caller.playlist_action === "ADD_VIDEO") {
+            if (caller.playlist_action === "ADD_VIDEO" 
+                && (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabs[0].url) 
+                && caller.playlist_add_vid_by_url === undefined) 
+                || (caller.playlist_add_vid_by_url !== undefined)) {
 
                 if (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabs[0].url) 
-                    && !caller.playlist_add_vid_by_url) {
+                    && caller.playlist_add_vid_by_url === undefined) {
                     video_id = tabs[0].url.match(/watch.*v\=([^&]+)/)[1];
                 } else {
                     video_id = /\/\/www\.youtube\.com\/watch.*v\=/.test(caller.playlist_add_vid_by_url)
@@ -124,7 +127,7 @@ var chromeExtension = {
                             chrome.runtime.sendMessage({ data: "VIDEO_EXISTS" });
                         }
                     } else {
-                        chrome.runtime.sendMessage({ data: "VIDEO_LINK_INVALID" });
+                        chrome.runtime.sendMessage({ data: "INVALID_LINK" });
                     }
                 }
             } else {

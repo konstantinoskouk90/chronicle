@@ -1058,7 +1058,7 @@ $(document).ready(function () {
           $(self).css("cursor", "pointer");
         }
 
-        if (data === "MAX_VIDEO" || data === "VIDEO_EXISTS" || data === "INVALID_PAGE" || data === "VIDEO_UNAVAILABLE" || data === "VIDEO_LINK_INVALID") {
+        if (data === "MAX_VIDEO" || data === "VIDEO_EXISTS" || data === "INVALID_PAGE" || data === "INVALID_LINK" || data === "VIDEO_UNAVAILABLE") {
           playlistMessage(data.toLowerCase());
           $(self).css("cursor", "pointer");
         }
