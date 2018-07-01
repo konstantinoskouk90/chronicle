@@ -14,7 +14,7 @@
 
 <p>Google Chrome is required to install this extension.</p>
 <ul>
-	<li>Redirect to https://goo.gl/vaPqgS.</li>
+	<li>Redirect to https://chrome.google.com/webstore/detail/chronicle-for-youtube/mmjiklhkmelmcndgghbkfknilhidphdb.</li>
 	<li>Click on ADD TO CHROME.</li>
 	<li>Enjoy!</li>
 </ul>
