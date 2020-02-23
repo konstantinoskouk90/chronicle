@@ -3,7 +3,7 @@ function scrapeDOM() {
     var id, ifrm_id, link, src, ytIDs = [],
         fb_links = document.querySelectorAll(".mbs._6m6._2cnj._5s6c a").length,
         o_links = document.querySelectorAll("a").length,
-        b_links = document.querySelectorAll(".sa_wrapper").length,
+        b_links = document.querySelectorAll(".vrhdata").length,
         iframes = document.querySelectorAll("iframe").length,
         links;
 
@@ -20,13 +20,17 @@ function scrapeDOM() {
         for (var i = 0; i < links; i++) {
 
             if (location.hostname === "www.facebook.com" && !!document.querySelectorAll(".mbs._6m6._2cnj._5s6c a").length) {
+                // Facebook
                 link = decodeURIComponent(document.querySelectorAll(".mbs._6m6._2cnj._5s6c a")[i].getAttribute("href"));
             } else if (!!document.querySelectorAll("a").length && location.hostname !== "www.bing.com" && !/yahoo\.com/.test(window.location.href)) {
+                // Any <a> tags on any site
                 link = document.querySelectorAll("a")[i].href;
             } else if (/yahoo\.com/.test(window.location.href)) {
+                // Yahoo!
                 link = document.querySelectorAll("a")[i].getAttribute("data-rurl");
             } else if (location.hostname === "www.bing.com") {
-                link = JSON.parse(document.querySelectorAll(".sa_wrapper")[i].getAttribute("data-eventpayload")).purl;
+                // Bing
+                link = JSON.parse(document.querySelectorAll(".vrhdata")[i].getAttribute("vrhm")).pgurl;
             }
 
             if (!!link) {
@@ -37,8 +41,12 @@ function scrapeDOM() {
                     id = (link.match(/youtu([^&]+)/)[1].match(/.*/)[0].split("/")[1].split('");')[0].replace(/\#$/, ""));
                 } else if (location.hostname === "www.facebook.com" && (/feature.*youtu\.be&v=/.test(link))) {
                     id = (link.match(/&v=([^&]+)/)[1].split('");')[0].replace(/\#$/, ""));
-                } else if (location.hostname === "www.youtube.com" && /results\?search\_query\=/.test(location.href) && /\/watch\?v\=/.test(link)) {
-                    if ((!/feature=player-title/.test(document.querySelectorAll("a")[i].getAttribute("data-sessionlink"))) && !/ytp-next-button/.test(document.querySelectorAll("a")[i].getAttribute("class"))) {
+                } else if (location.hostname === "www.youtube.com" &&
+                    /results\?search\_query\=/.test(location.href) &&
+                    /\/watch\?v\=/.test(link)) {
+
+                    if ((!/feature=player-title/.test(document.querySelectorAll("a")[i].getAttribute("data-sessionlink"))) &&
+                        !/ytp-next-button/.test(document.querySelectorAll("a")[i].getAttribute("class"))) {
                         id = (link.match(/\/watch\?v\=([^&]+)/)[1]).replace(/\#$/, "");
                     }
                 } else if ((location.hostname !== "www.facebook.com") && (location.hostname !== "www.bing.com") && (/\/watch\?v\=/.test(link))) {
@@ -57,14 +65,14 @@ function scrapeDOM() {
     }
 
     if (iframes > 0) {
-
+        // Any <iframe> on any site
         for (var x = 0; x < iframes; x++) {
-
             src = document.querySelectorAll("iframe")[x].src;
 
             if (/www\.youtube\.com\/embed/.test(src)) {
                 ifrm_id = src.match(/embed\/([^&?]+)/)[1];
             }
+
             if (ifrm_id !== undefined) {
                 if (ytIDs.indexOf(ifrm_id) < 0) {
                     ytIDs.push(ifrm_id);
@@ -73,7 +81,7 @@ function scrapeDOM() {
         }
     }
 
-    //Callback
+    // Callback
     sendMessage(ytIDs);
 }
 
