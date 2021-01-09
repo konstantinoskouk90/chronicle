@@ -439,7 +439,7 @@ $(document).ready(function () {
 
         for (var x = 0; x < lnk.length; x++) {
 
-          var allIDs = lnk[x].split("embed/")[1],
+          var allIDs = lnk[x].split("watch?v=")[1],
             actID = mp;
 
           if (allIDs === actID) {
@@ -1074,17 +1074,13 @@ $(document).ready(function () {
 
   //PLAY VIDEO
   $(document).on("click", VIDEO_PLAYER, function () {
-
     if (navigator.onLine) {
-
-      var a, self = this,
-        vi = $(ACTIVE_PLAYLIST_VIDEO).attr("href").match(/embed\/(.*)/)[1],
-        lnk = "https://www.youtube.com/watch?v=" + vi;
-
-      if (lnk !== "") {
+      var vi = $(ACTIVE_PLAYLIST_VIDEO).attr("href");
+      
+      if (vi !== "") {
         trackEvent("event", "Video", "play", "Play", 1);
         chrome.tabs.create({
-          url: lnk,
+          url: vi,
           active: true
         });
       }
@@ -1771,7 +1767,7 @@ $(document).ready(function () {
         }
 
         if (res.author_url === undefined) {
-          res.author_url = "https://www.youtube.com/watch?v=" + lnk.split("embed/")[1];
+          res.author_url = lnk;
         }
 
         active_title.push(res.title);
