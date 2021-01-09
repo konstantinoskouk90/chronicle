@@ -19,14 +19,15 @@
 	<li>Enjoy!</li>
 </ul>
 
-<h2>TODO - Extend functionality and scale extension</h2>
+<h2>TODO - Feature Requests</h2>
 
 <ul>
-	<li>When editing a playlist’s details, be able to see the image link and remove the image.</li>
-	<li>Enable sharing playlists with other users of the extension via dynamic link.</li>
+	<li>Reverse order of playlist.</li>
+	<li>Importing an existing playlist via a link.</li>
+	<li>Investigate increasing video limit.</li>
 </ul>
 
 <h2>Author & Contact</h2>
 
-<p>Created by: <i>Konstantinos Koukourakis</i></p>
+<p>Created by: <i>Kostas Koukourakis</i></p>
 <p><a href="mailto:konstantinoskouk90@gmail.com" target="_top">konstantinoskouk90@gmail.com</a></p>

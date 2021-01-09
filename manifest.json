@@ -1,7 +1,7 @@
 {
     "name": "Chronicle for YouTube",
     "short_name": "Chronicle",
-    "version": "1.4",
+    "version": "1.5",
     "description": "YouTube playlists made simple",
     "manifest_version": 2,
     "permissions": ["<all_urls>", "tabs"],
