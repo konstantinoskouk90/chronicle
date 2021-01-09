@@ -13,7 +13,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 });
 
 var chromeExtension = {
-
     activeTab: function () {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             if (!/^chrome\:\/\//.test(tabs[0].url)) {
@@ -26,7 +25,6 @@ var chromeExtension = {
         });
     },
     constrObj: function (title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, action) {
-
         var msg, objConstr = {},
             objStored = JSON.parse(localStorage.playlist),
             objKeys = Object.keys(objStored);
@@ -89,9 +87,7 @@ var chromeExtension = {
         }
     },
     updatePlaylist: function (caller) {
-
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-
             var video_id,
                 all_IDs = JSON.parse(localStorage.playlist)[caller.playlist_name].link || "",
                 numVids = JSON.parse(localStorage.playlist)[caller.playlist_name].videos;
@@ -136,7 +132,6 @@ var chromeExtension = {
         });
     },
     createPlaylist: function (caller) {
-
         var title, description, img_src, link, num_vids, thumbnails, count_plays, extract_ids;
 
         if (caller.playlist !== undefined) {
@@ -164,7 +159,7 @@ var chromeExtension = {
 
         if (!!extract_ids.length) {
             link = "https://www.youtube.com/watch_videos?&title=" + title + "&video_ids=" + extract_ids;
-            var lastAddedLink = "https://www.youtube.com/embed/" + extract_ids.split(",")[(extract_ids.split(",").length) - 1];
+            var lastAddedLink = "https://www.youtube.com/oembed?url=" + encodeURIComponent("https://www.youtube.com/watch?v=" + extract_ids.split(",")[(extract_ids.split(",").length) - 1]);
             status = "enabled";
             num_vids = extract_ids.split(",").length;
             xhr = new XMLHttpRequest();
@@ -182,7 +177,7 @@ var chromeExtension = {
                     }
                 }
             };
-            xhr.open("GET", "https://noembed.com/embed?format=json&url=" + encodeURIComponent(lastAddedLink));
+            xhr.open("GET", lastAddedLink);
             xhr.send();
         } else {
             link = "";

@@ -2314,6 +2314,7 @@ input[type="checkbox"]:checked + label span {
 }
 
 .video-title-wrapper .scanned-video-title {
+    cursor: default;
     width: 275px;
     height: 25px;
     margin-left: 10px;
@@ -2335,6 +2336,7 @@ input[type="checkbox"]:checked + label span {
 }
 
 .popup-author-wrapper .scanned-video-author {
+    cursor: default;
     width: 105px;
     height: 25px;
     margin-left: 10px;
