@@ -1,122 +1,137 @@
-/*jshint esnext: true */
+// Event listener for messages from content scripts or other parts of the extension
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+    const send = message.send;
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if ((message.from === "content")) {
+    console.log('message', message);
+
+    if (message.from === "content") {
         if (!!message.found) {
-            delete localStorage.playlist_scanned;
-            localStorage.setItem("playlist_scanned", message.data);
+            await chrome.storage.local.set({ 'playlist_scanned': send });
         } else {
-            delete localStorage.playlist_scanned;
+            await chrome.storage.local.remove('playlist_scanned');
         }
-        chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
+
+        await chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
+    }
+
+    if (message.action === "activeTab") {
+        await chromeExtension.activeTab(send);
+    }
+
+    if (message.action === "updatePlaylist") {
+       await  chromeExtension.updatePlaylist(send);
+    }
+
+    if (message.action === "createPlaylist") {
+        await chromeExtension.createPlaylist(send);
     }
 });
 
-var chromeExtension = {
-    activeTab: function () {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            if (!/^chrome\:\/\//.test(tabs[0].url)) {
-                chrome.tabs.executeScript(tabs[0].id, {
-                    file: "js/content.js"
-                });
-            } else {
-                chrome.runtime.sendMessage({ data: "CANNOT_SCAN_PAGE" });
-            }
-        });
-    },
-    constrObj: function (title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, action) {
-        var msg, objConstr = {},
-            objStored = JSON.parse(localStorage.playlist),
-            objKeys = Object.keys(objStored);
-
-        if (!objKeys.length) {
-            objConstr[title] = {};
-            objConstr[title].date_modified = date_modified;
-            objConstr[title].description = description;
-            objConstr[title].status = status;
-            objConstr[title].lastAdded = lastAdded;
-            objConstr[title].plays = count_plays;
-            objConstr[title].videos = num_vids;
-            objConstr[title].thumbnails = thumbnails;
-            objConstr[title].image = img_src;
-            objConstr[title].link = link;
-            localStorage.setItem("playlist", JSON.stringify(objConstr));
+const chromeExtension = {
+    // Function to activate the extension in the active tab
+    activeTab: async () => {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab.url.startsWith("chrome://")) {
+            await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ["js/content.js"],
+            });
         } else {
-            objStored[title] = {};
-            objStored[title].date_modified = date_modified;
-            objStored[title].description = description;
-            objStored[title].status = status;
-            objStored[title].lastAdded = lastAdded;
-            objStored[title].plays = count_plays;
-            objStored[title].videos = num_vids;
-            objStored[title].thumbnails = thumbnails;
-            objStored[title].image = img_src;
-            objStored[title].link = link;
-            localStorage.setItem("playlist", JSON.stringify(objStored));
+            chrome.runtime.sendMessage({ data: "CANNOT_SCAN_PAGE" });
         }
+    },
+    // Function to construct and update playlist data
+    constrObj: async (title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, action) => {
+        let playlistData = await chrome.storage.local.get('playlist');
+        playlistData = playlistData.playlist || {};
 
+        playlistData[title] = {
+            date_modified,
+            description,
+            status,
+            lastAdded,
+            plays: count_plays,
+            videos: num_vids,
+            thumbnails,
+            image: img_src,
+            link,
+        };
+
+        await chrome.storage.local.set({ 'playlist': playlistData });
+
+        // Send message based on action
         switch (action) {
             case "ADD_VIDEO":
-                msg = "ADDED_VIDEO";
+                chrome.runtime.sendMessage({ data: "ADDED_VIDEO" });
                 break;
             case "PLAY_PLAYLIST":
-                msg = "PLAYED_PLAYLIST";
+                chrome.runtime.sendMessage({ data: "PLAYED_PLAYLIST" });
                 break;
             case "CREATE_PLAYLIST":
-                msg = "CREATED_PLAYLIST";
+                chrome.runtime.sendMessage({ data: "CREATED_PLAYLIST" });
                 break;
             case "SAVE_PLAYLIST":
-                msg = "SAVED_PLAYLIST";
+                chrome.runtime.sendMessage({ data: "SAVED_PLAYLIST" });
                 break;
             case "SAVE_VIDEO_THUMB":
-                msg = "SAVED_VIDEO_THUMB";
+                chrome.runtime.sendMessage({ data: "SAVED_VIDEO_THUMB" });
                 break;
             case "SAVE_VIDEO_POS_THUMB":
-                msg = "SAVED_VIDEO_POS_THUMB";
+                chrome.runtime.sendMessage({ data: "SAVED_VIDEO_POS_THUMB" });
                 break;
             case "DELETE_VIDEO":
-                msg = "DELETED_VIDEO";
+                chrome.runtime.sendMessage({ data: "DELETED_VIDEO" });
                 break;
             case "SCAN_ADD_VIDEO":
-                msg = "SCANNED_ADDED_VIDEO";
+                chrome.runtime.sendMessage({ data: "SCANNED_ADDED_VIDEO" });
+                break;
+            default:
                 break;
         }
-
-        if (action !== undefined) {
-            chrome.runtime.sendMessage({ data: msg });
-        }
     },
-    updatePlaylist: function (caller) {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            var video_id,
-                all_IDs = JSON.parse(localStorage.playlist)[caller.playlist_name].link || "",
-                numVids = JSON.parse(localStorage.playlist)[caller.playlist_name].videos;
-
-            if (caller.playlist_action === "ADD_VIDEO" 
-                && (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabs[0].url) 
-                && caller.playlist_add_vid_by_url === undefined) 
-                || (caller.playlist_add_vid_by_url !== undefined)) {
-
-                if (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabs[0].url) 
-                    && caller.playlist_add_vid_by_url === undefined) {
-                    video_id = tabs[0].url.match(/watch.*v\=([^&]+)/)[1];
+    // Function to update playlist with new videos
+    updatePlaylist: (caller, callback) => {
+        const { playlist_name, playlist_action, playlist_add_vid_by_url } = caller;
+    
+        chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+            const tab = tabs[0];
+            const tabsURL = tab.url;
+    
+            console.log('queryResult', tab);
+    
+            if (playlist_action === "ADD_VIDEO" &&
+                (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabsURL) && playlist_add_vid_by_url === undefined) ||
+                (playlist_add_vid_by_url !== undefined)) {
+    
+                let video_id;
+    
+                if (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabsURL) && playlist_add_vid_by_url === undefined) {
+                    video_id = tabsURL.match(/watch.*v\=([^&]+)/)[1];
                 } else {
-                    video_id = /\/\/www\.youtube\.com\/watch.*v\=/.test(caller.playlist_add_vid_by_url)
-                        ? caller.playlist_add_vid_by_url.match(/watch.*v\=([^&]+)/)[1]
-                        : undefined;
+                    video_id = /\/\/www\.youtube\.com\/watch.*v\=/.test(playlist_add_vid_by_url) ?
+                        playlist_add_vid_by_url.match(/watch.*v\=([^&]+)/)[1] :
+                        undefined;
                 }
-
+    
+                const playlistData = await new Promise((resolve) => {
+                    chrome.storage.local.get('playlist', resolve);
+                });
+    
+                const storedPlaylist = playlistData.playlist || {};
+                const all_IDs = storedPlaylist[playlist_name]?.link || "";
+                const numVids = storedPlaylist[playlist_name]?.videos || 0;
+    
                 if (!all_IDs.length) {
                     if (video_id !== undefined) {
                         caller.playlist = video_id;
-                        chromeExtension.createPlaylist(caller);
+                        await chromeExtension.createPlaylist(caller);
                     }
                 } else {
                     if (video_id !== undefined) {
-                        var prod = new RegExp(video_id);
+                        const prod = new RegExp(video_id);
                         if (!prod.test(all_IDs) && numVids < 50) {
                             caller.playlist = all_IDs.match(/video_ids=(.*)/)[1] + "," + video_id;
-                            chromeExtension.createPlaylist(caller);
+                            await chromeExtension.createPlaylist(caller);
                         } else if (numVids === 50) {
                             chrome.runtime.sendMessage({ data: "MAX_VIDEO" });
                         } else if (prod.test(all_IDs)) {
@@ -129,63 +144,48 @@ var chromeExtension = {
             } else {
                 chrome.runtime.sendMessage({ data: "INVALID_PAGE" });
             }
+    
+            if (typeof callback === 'function') {
+                callback();
+            }
         });
-    },
-    createPlaylist: function (caller) {
-        var title, description, img_src, link, num_vids, thumbnails, count_plays, extract_ids;
+    },    
+    // Function to create a new playlist
+    createPlaylist: async (caller) => {
+        console.log('caller', caller);
+        const { playlist_name, playlist_description, playlist_image, playlist, playlist_plays, thumbnails, playlist_action } = caller;
+        const date_modified = new Date();
+        const extract_ids = playlist || "";
+        const count_plays = playlist_plays || "0";
+        const lastAddedLink = extract_ids ? `https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${extract_ids.split(",")[extract_ids.split(",").length - 1]}`)}` : "";
 
-        if (caller.playlist !== undefined) {
-            extract_ids = caller.playlist;
-        } else {
-            extract_ids = "";
-        }
+        if (extract_ids) {
+            let link = `https://www.youtube.com/watch_videos?&title=${playlist_name}&video_ids=${extract_ids}`;
+            let status = "enabled";
+            let num_vids = extract_ids.split(",").length;
 
-        if (caller.playlist_plays !== undefined) {
-            count_plays = caller.playlist_plays;
-        } else {
-            count_plays = "0";
-        }
+            try {
+                // Fetch last added video's title
+                const response = await fetch(lastAddedLink);
+                if (response.ok) {
+                    const data = await response.json();
+                    let lastAdded = data.title || "";
 
-        if (caller.thumbnails !== undefined) {
-            thumbnails = caller.thumbnails;
-        } else {
-            thumbnails = "";
-        }
-
-        title = caller.playlist_name;
-        description = caller.playlist_description;
-        img_src = caller.playlist_image;
-        var date_modified = new Date();
-
-        if (!!extract_ids.length) {
-            link = "https://www.youtube.com/watch_videos?&title=" + title + "&video_ids=" + extract_ids;
-            var lastAddedLink = "https://www.youtube.com/oembed?url=" + encodeURIComponent("https://www.youtube.com/watch?v=" + extract_ids.split(",")[(extract_ids.split(",").length) - 1]);
-            status = "enabled";
-            num_vids = extract_ids.split(",").length;
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    if (JSON.parse(xhr.responseText).title !== undefined) {
-                        chromeExtension.constrObj(title, date_modified, description, status, encodeURIComponent(JSON.parse(xhr.responseText).title), count_plays, num_vids, thumbnails, img_src, link, caller.playlist_action);
-                    } else {
-                        if (caller.playlist_action === "ADD_VIDEO") {
-                            chrome.runtime.sendMessage({ data: "VIDEO_UNAVAILABLE" });
-                        }
-                        if (caller.playlist_action === "PLAY_PLAYLIST") {
-                            chromeExtension.constrObj(title, date_modified, description, status, encodeURIComponent(JSON.parse(xhr.responseText).title), count_plays, num_vids, thumbnails, img_src, link, caller.playlist_action);
-                        }
-                    }
+                    await chromeExtension.constrObj(playlist_name, date_modified, playlist_description, status, lastAdded, count_plays, num_vids, thumbnails, playlist_image, link, playlist_action);
+                } else {
+                    throw new Error("Failed to fetch last added video");
                 }
-            };
-            xhr.open("GET", lastAddedLink);
-            xhr.send();
+            } catch (error) {
+                console.error("Error fetching last added video:", error);
+                if (caller.playlist_action === "ADD_VIDEO") {
+                    chrome.runtime.sendMessage({ data: "VIDEO_UNAVAILABLE" });
+                }
+                if (caller.playlist_action === "PLAY_PLAYLIST") {
+                    await chromeExtension.constrObj(playlist_name, date_modified, playlist_description, status, "", count_plays, num_vids, thumbnails, playlist_image, link, playlist_action);
+                }
+            }
         } else {
-            link = "";
-            status = "disabled";
-            num_vids = 0;
-            thumbnails = "";
-            var lastAdded = "";
-            this.constrObj(title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, caller.playlist_action);
+            await chromeExtension.constrObj(playlist_name, date_modified, playlist_description, "disabled", "", 0, 0, "", "", "", playlist_action);
         }
     },
 };
