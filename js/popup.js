@@ -637,7 +637,7 @@ $(document).ready(function () {
   // ACTIVE VIDEO PREVIEW
   function videoPrev(sel) {
     if (sel !== undefined) {
-      chrome.storage.local.get('video', function (data) {
+      chrome.storage.local.get(['playlist', 'video'], function (data) {
         var hid = $(sel).attr("href"),
           obj = data.video ? data.video[hid] : {},
           len = Object.keys(obj).length,
@@ -647,7 +647,8 @@ $(document).ready(function () {
           pos = obj.video_position,
           l = "https://www.youtube.com/embed/" + hid.split("watch?v=")[1] + "?rel=0&amp;showinfo=0&amp;iv_load_policy=3&amp;controls=2&amp;fs=0&amp;loop=1&amp;color=white&amp;disablekb=1&amp;enablejsapi=1&amp;version=3";
 
-        var n, data_tb = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")].thumbnails,
+        var n, playlistData = data.playlist || {},
+          data_tb = playlistData[$(PLAYLIST_ACTIVE).attr("hidden_title")].thumbnails,
           data_ps = obj.video_position,
           data_id = hid.split("watch?v=")[1];
 
@@ -656,7 +657,7 @@ $(document).ready(function () {
           $(PREVIEW_POPUP_VIDEO + " iframe").attr("src", l);
         }
 
-        if (data_tb !== "") {
+        if (data_tb && data_tb !== "") {
 
           n = data_tb.split(",")[data_ps - 1];
 
@@ -772,11 +773,14 @@ $(document).ready(function () {
     $(HEADER_RIGHT).css("cursor", "not-allowed");
     $(RESET_APP_WRAPPER + " img").css("cursor", "not-allowed");
 
-    // Retrieve data from chrome.storage.local
-    chrome.storage.local.get('playlist', function (result) {
-      var obj = result.playlist ? result.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")] : {},
+    chrome.storage.local.get('playlist', function (data) {
+      var obj = data.playlist ? data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")] : {},
         thb = obj.thumbnails,
         vid = Number(obj.videos);
+
+      console.log('data', data);
+      console.log('$(PLAYLIST_ACTIVE).attr("hidden_title")', $(PLAYLIST_ACTIVE).attr("hidden_title"));
+      console.log('obj', obj);
 
       if (!$(ACTIVE_PLAYLIST_VIDEOS + ":nth(" + n + ")").length) {
         vid_added = vid_temp || 0;
@@ -789,7 +793,7 @@ $(document).ready(function () {
 
       var img;
 
-      if (thb !== "") {
+      if (thb && thb !== "") {
         var s = thb.split(",")[vp - 1];
         img = "https://img.youtube.com/vi/" + lk.split("watch?v=")[1] + "/" + s + ".jpg";
       } else {
@@ -797,7 +801,7 @@ $(document).ready(function () {
       }
 
       $(ACTIVE_PLAYLIST_VIDEOS + ":nth(" + n + ")").append('<div class="video-playlist-video" href="' + lk + '"></div>');
-      $(VIDEO_PLAYLIST + ":nth(" + vid_added + ")").append('<img class="video-playlist-favorite" src="' + img + '" title="' + tt.replace(/"/g, "''") + '" hidden_title="' + encodeURIComponent(tt) + '" />');
+      $(VIDEO_PLAYLIST + ":nth(" + vid_added + ")").append('<img class="video-playlist-favorite" src="' + img + '" title="' + tt.replace(/"/g, "''") + '" hidden_title="' + tt + '" />');
       $(VIDEO_PLAYLIST + ":nth(" + vid_added + ")").append('<div class="video-image-title"></div>');
       $(VIDEO_PLAYLIST + ":nth(" + vid_added + ")").append('<div class="video-image-name"></div>');
       $(VID_IMG_NAME + ":nth(" + vid_added + ")").append('<span class="ellipsis">' + tt + ' </span>');
@@ -942,7 +946,7 @@ $(document).ready(function () {
           send.playlist_action = "ADD_VIDEO";
           send.playlist_plays = pla;
 
-          if (thb !== "") {
+          if (thb && thb !== "") {
             var temp = thb.split(","),
               tempLen = temp.length;
 
@@ -1389,7 +1393,7 @@ $(document).ready(function () {
 
   //API CALL TO GET SCANNED DETAILS
   function scanAPI(cnt, num) {
-    var playlistName = encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+");
+    var playlistName = $(TITLE_VIDEOS).text().replace(/%20/g, "+");
 
     chrome.storage.local.get('playlist', function (data) {
       var playlist = data.playlist || {};
@@ -1470,7 +1474,7 @@ $(document).ready(function () {
   function renderScannedUI(num, link, title, author, author_url, thumbnail) {
     var len,
       state = "add",
-      playlistTitle = encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+"),
+      playlistTitle = $(TITLE_VIDEOS).text().replace(/%20/g, "+"),
       ytID = link.match(/watch\?v\=([^&]+)/)[1],
       savedState = [];
 
@@ -1536,7 +1540,7 @@ $(document).ready(function () {
     }
 
     if ($(this).parent().css("cursor") !== "not-allowed") {
-      var playlistTitle = encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+");
+      var playlistTitle = $(TITLE_VIDEOS).text().replace(/%20/g, "+");
 
       chrome.storage.local.get("playlist", function (result) {
         var playlist = result.playlist || {};
@@ -1600,7 +1604,7 @@ $(document).ready(function () {
 
   // UPDATE SCAN POPUP
   $(document).on("click", SCAN_UPDATE, function () {
-    var playlistTitle = encodeURIComponent($(PLAYLIST_ACTIVE).attr("hidden_title"));
+    var playlistTitle = $(PLAYLIST_ACTIVE).attr("hidden_title");
     var tv, active_obj;
 
     chrome.storage.local.get("playlist", function (data) {
@@ -1881,10 +1885,9 @@ $(document).ready(function () {
         $(PLAYLIST_ACTIVE).next().next().fadeOut("normal");
 
         $(PLAYLIST_ACTIVE).fadeOut("normal", function () {
-
           chrome.storage.local.get('playlist', function (result) {
             var playlist = result.playlist || {};
-            var playlistName = encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+");
+            var playlistName = $(TITLE_VIDEOS).text().replace(/%20/g, "+");
 
             delete playlist[playlistName];
 
@@ -2034,8 +2037,8 @@ $(document).ready(function () {
         console.log('storeObj', storeObj);
 
         if ($(MENU_BACK_IMG).css("display") !== "block") {
-          send.playlist_name = encodeURIComponent($(NEW_PLAYLIST_NAME).val().replace(/\s+$/g, "")).replace(/%20/g, "+");
-          send.playlist_description = encodeURIComponent($(NEW_PLAYLIST_DESCRIPTION).val().replace(/\s+$/g, ""));
+          send.playlist_name = $(NEW_PLAYLIST_NAME).val().replace(/\s+$/g, "").replace(/%20/g, "+");
+          send.playlist_description = $(NEW_PLAYLIST_DESCRIPTION).val().replace(/\s+$/g, "");
           send.playlist_image = $(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src");
         } else {
           send.playlist_name = act;

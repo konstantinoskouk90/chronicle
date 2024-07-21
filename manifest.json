@@ -10,7 +10,9 @@
     "scripting"
   ],
   "host_permissions": [
-    "https://www.google-analytics.com/"
+    "https://www.google-analytics.com/",
+    "http://*/*",
+    "https://*/*"
   ],
   "optional_host_permissions": [
     "*://*/*"

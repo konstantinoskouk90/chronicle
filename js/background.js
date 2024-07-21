@@ -1,5 +1,5 @@
 // Event listener for messages from content scripts or other parts of the extension
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => {
     const send = message.send;
 
     console.log('message', message);
@@ -15,30 +15,42 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
 
     if (message.action === "activeTab") {
-        await chromeExtension.activeTab(send);
+        chromeExtension.activeTab(send);
     }
 
     if (message.action === "updatePlaylist") {
-       await  chromeExtension.updatePlaylist(send);
+        chromeExtension.updatePlaylist(send);
     }
 
     if (message.action === "createPlaylist") {
-        await chromeExtension.createPlaylist(send);
+        chromeExtension.createPlaylist(send);
     }
 });
 
 const chromeExtension = {
     // Function to activate the extension in the active tab
-    activeTab: async () => {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (!tab.url.startsWith("chrome://")) {
-            await chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                files: ["js/content.js"],
-            });
-        } else {
-            chrome.runtime.sendMessage({ data: "CANNOT_SCAN_PAGE" });
-        }
+    activeTab: (caller, callback) => {
+        console.log('caller', caller);
+        console.log('callback', callback);
+
+        chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+            var tab = tabs[0];
+
+            if (tabs.length > 0 && !tabs[0].url.startsWith("chrome://")) {
+                console.log('tab', tab);
+                
+                await chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    files: ["js/content.js"],
+                });
+            } else {
+                chrome.runtime.sendMessage({ data: "CANNOT_SCAN_PAGE" });
+            }
+
+            if (typeof callback === 'function') {
+                callback();
+            }
+        });
     },
     // Function to construct and update playlist data
     constrObj: async (title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, action) => {
@@ -94,6 +106,8 @@ const chromeExtension = {
         const { playlist_name, playlist_action, playlist_add_vid_by_url } = caller;
     
         chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+            console.log('tabs', tabs);
+            
             const tab = tabs[0];
             const tabsURL = tab.url;
     
