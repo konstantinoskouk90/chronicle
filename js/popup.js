@@ -1752,10 +1752,6 @@ $(document).ready(function () {
 
         $(this).css("cursor", "wait");
 
-        console.log(' Object.keys(playlist).length > 0',  Object.keys(playlist).length > 0);
-        console.log(playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")]);
-        console.log('lnk', lnk);
-
         if (lnk !== "") {
           lst = lnk.match(/video_ids=(.*)/)[1].split(",");
         } else {
