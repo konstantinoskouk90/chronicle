@@ -1,35 +1,42 @@
-// Event listener for messages from content scripts or other parts of the extension
 chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => {
-    const send = message.send;
+    console.log('Received message:', message);
 
-    console.log('message', message);
-
-    if (message.from === "content") {
-        if (!!message.found) {
-            await chrome.storage.local.set({ 'playlist_scanned': send });
-        } else {
-            await chrome.storage.local.remove('playlist_scanned');
+    try {
+        if (message.from === "content") {
+            if (message.found) {
+                await chrome.storage.local.set({ 'playlist_scanned': message.send }, function () {
+                    chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
+                });
+            } else {
+                await chrome.storage.local.remove('playlist_scanned', function() {
+                    chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
+                });
+            }
         }
 
-        await chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
-    }
-
-    if (message.action === "activeTab") {
-        chromeExtension.activeTab(send);
-    }
-
-    if (message.action === "updatePlaylist") {
-        chromeExtension.updatePlaylist(send);
-    }
-
-    if (message.action === "createPlaylist") {
-        chromeExtension.createPlaylist(send);
+        if (message.action) {
+            switch (message.action) {
+                case "activeTab":
+                    await chromeExtension.activeTab(message.send);
+                    break;
+                case "updatePlaylist":
+                    await chromeExtension.updatePlaylist(message.send);
+                    break;
+                case "createPlaylist":
+                    await chromeExtension.createPlaylist(message.send);
+                    break;
+                default:
+                    console.log('Unknown action:', message.action);
+            }
+        }
+    } catch (error) {
+        console.error('Error processing message:', error);
     }
 });
 
 const chromeExtension = {
     // Function to activate the extension in the active tab
-    activeTab: (caller, callback) => {
+    activeTab: async (caller, callback) => {
         console.log('caller', caller);
         console.log('callback', callback);
 
@@ -37,18 +44,82 @@ const chromeExtension = {
             var tab = tabs[0];
 
             if (tabs.length > 0 && !tabs[0].url.startsWith("chrome://")) {
-                console.log('tab', tab);
-                
-                await chrome.scripting.executeScript({
-                    target: { tabId: tab.id },
-                    files: ["js/content.js"],
-                });
+                if (tab.url.startsWith("http") || tab.url.startsWith("https")) {
+                    try {
+                        await chrome.scripting.executeScript({
+                            target: { tabId: tab.id },
+                            function: () => {
+                                const ytIDs = [];
+                            
+                                // Scrape links and iframes
+                                const fbLinks = document.querySelectorAll(".mbs._6m6._2cnj._5s6c a");
+                                const otherLinks = document.querySelectorAll("a");
+                                const bingLinks = document.querySelectorAll(".vrhdata");
+                                const iframes = document.querySelectorAll("iframe");
+                            
+                                const links = fbLinks.length || (location.hostname !== "www.bing.com" ? otherLinks.length : bingLinks.length);
+                                                        
+                                if (links > 0) {
+                                    const allLinks = fbLinks.length ? fbLinks : (location.hostname !== "www.bing.com" ? otherLinks : bingLinks);
+                                                        
+                                    allLinks.forEach(linkElement => {
+                                        let link;
+                            
+                                        if (location.hostname === "www.facebook.com") {
+                                            link = decodeURIComponent(linkElement.getAttribute("href"));
+                                        } else if (location.hostname === "www.bing.com") {
+                                            link = JSON.parse(linkElement.getAttribute("vrhm")).pgurl;
+                                        } else {
+                                            link = linkElement.href || linkElement.getAttribute("data-rurl");
+                                        }
+                            
+                                        if (link) {
+                                            let id;
+                            
+                                            if (location.hostname === "www.youtube.com" && /\/watch\?v=/.test(link)) {
+                                                id = link.match(/\/watch\?v=([^&]+)/)[1];
+                                            } else if (location.hostname === "www.facebook.com" && (/\/watch\?v=/.test(link) || /youtu\.be/.test(link))) {
+                                                id = link.match(/(?:\/watch\?v=|youtu\.be\/)([^&]+)/)[1];
+                                            } else if (location.hostname === "www.bing.com" && /watch\?v=/.test(link)) {
+                                                id = link.split("watch?v=")[1];
+                                            }
+                            
+                                            if (id && !ytIDs.includes(id)) {
+                                                ytIDs.push(id);
+                                            }
+                                        }
+                                    });
+                                }
+                            
+                                if (iframes.length > 0) {
+                                    iframes.forEach(iframeElement => {
+                                        const src = iframeElement.src;
+                            
+                                        if (/www\.youtube\.com\/embed/.test(src)) {
+                                            const ifrm_id = src.match(/embed\/([^&?]+)/)[1];
+                                            if (ifrm_id && !ytIDs.includes(ifrm_id)) {
+                                                ytIDs.push(ifrm_id);
+                                            }
+                                        }
+                                    });
+                                }
+                            
+                                chrome.runtime.sendMessage({ from: "content", found: ytIDs.length > 0, send: ytIDs });
+                            }
+                        }, function (res) {
+                            console.log('res', res);
+                            console.log('Script executed successfully');
+                        });
+                    } catch (error) {
+                        console.error('Script execution failed: ', error);
+                    }
+                }
             } else {
                 chrome.runtime.sendMessage({ data: "CANNOT_SCAN_PAGE" });
             }
 
             if (typeof callback === 'function') {
-                callback();
+                await callback();
             }
         });
     },
@@ -104,21 +175,21 @@ const chromeExtension = {
     // Function to update playlist with new videos
     updatePlaylist: (caller, callback) => {
         const { playlist_name, playlist_action, playlist_add_vid_by_url } = caller;
-    
+
         chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
             console.log('tabs', tabs);
-            
+
             const tab = tabs[0];
             const tabsURL = tab.url;
-    
+
             console.log('queryResult', tab);
-    
+
             if (playlist_action === "ADD_VIDEO" &&
                 (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabsURL) && playlist_add_vid_by_url === undefined) ||
                 (playlist_add_vid_by_url !== undefined)) {
-    
+
                 let video_id;
-    
+
                 if (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabsURL) && playlist_add_vid_by_url === undefined) {
                     video_id = tabsURL.match(/watch.*v\=([^&]+)/)[1];
                 } else {
@@ -126,15 +197,15 @@ const chromeExtension = {
                         playlist_add_vid_by_url.match(/watch.*v\=([^&]+)/)[1] :
                         undefined;
                 }
-    
+
                 const playlistData = await new Promise((resolve) => {
                     chrome.storage.local.get('playlist', resolve);
                 });
-    
+
                 const storedPlaylist = playlistData.playlist || {};
                 const all_IDs = storedPlaylist[playlist_name]?.link || "";
                 const numVids = storedPlaylist[playlist_name]?.videos || 0;
-    
+
                 if (!all_IDs.length) {
                     if (video_id !== undefined) {
                         caller.playlist = video_id;
@@ -158,12 +229,12 @@ const chromeExtension = {
             } else {
                 chrome.runtime.sendMessage({ data: "INVALID_PAGE" });
             }
-    
+
             if (typeof callback === 'function') {
                 callback();
             }
         });
-    },    
+    },
     // Function to create a new playlist
     createPlaylist: async (caller) => {
         console.log('caller', caller);

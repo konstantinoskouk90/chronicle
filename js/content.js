@@ -1,4 +1,6 @@
-async function scrapeDOM() {
+function scrapeDOM() {
+    console.log('entered scrapeDOM');
+
     const ytIDs = [];
 
     // Scrape links and iframes
@@ -9,8 +11,12 @@ async function scrapeDOM() {
 
     const links = fbLinks.length || (location.hostname !== "www.bing.com" ? otherLinks.length : bingLinks.length);
 
+    console.log('links', links);
+
     if (links > 0) {
         const allLinks = fbLinks.length ? fbLinks : (location.hostname !== "www.bing.com" ? otherLinks : bingLinks);
+
+        console.log('allLinks', allLinks);
 
         allLinks.forEach(linkElement => {
             let link;
@@ -54,18 +60,15 @@ async function scrapeDOM() {
         });
     }
 
-    // Get the current tab ID
-    chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
-        const currentTabId = tabs[0].id;
-
-        // Send message to background script
-        await chrome.scripting.sendMessage({
-            target: { tabId: currentTabId },
-            message: { from: "content", found: ytIDs.length > 0, send: ytIDs }
-        });
-
-        console.log("Message sent to background script with ytIDs:", ytIDs);
-    });
+    chrome.runtime.sendMessage({ from: "content", found: ytIDs.length > 0, send: ytIDs });
 }
 
-scrapeDOM();
+chrome.runtime.onMessage.addListener(function messageListener(message, _sender, _sendResponse) {
+    console.log('Received message in content.js:', message);
+
+    var action = message.action;
+
+    if (action === "RUN_CONTENT_SCRIPT") {
+        scrapeDOM();
+    }
+});
