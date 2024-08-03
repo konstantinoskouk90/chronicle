@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => 
                     chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
                 });
             } else {
-                await chrome.storage.local.remove('playlist_scanned', function() {
+                await chrome.storage.local.remove('playlist_scanned', function () {
                     chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
                 });
             }
@@ -50,21 +50,21 @@ const chromeExtension = {
                             target: { tabId: tab.id },
                             function: () => {
                                 const ytIDs = [];
-                            
+
                                 // Scrape links and iframes
                                 const fbLinks = document.querySelectorAll(".mbs._6m6._2cnj._5s6c a");
                                 const otherLinks = document.querySelectorAll("a");
                                 const bingLinks = document.querySelectorAll(".vrhdata");
                                 const iframes = document.querySelectorAll("iframe");
-                            
+
                                 const links = fbLinks.length || (location.hostname !== "www.bing.com" ? otherLinks.length : bingLinks.length);
-                                                        
+
                                 if (links > 0) {
                                     const allLinks = fbLinks.length ? fbLinks : (location.hostname !== "www.bing.com" ? otherLinks : bingLinks);
-                                                        
+
                                     allLinks.forEach(linkElement => {
                                         let link;
-                            
+
                                         if (location.hostname === "www.facebook.com") {
                                             link = decodeURIComponent(linkElement.getAttribute("href"));
                                         } else if (location.hostname === "www.bing.com") {
@@ -72,10 +72,10 @@ const chromeExtension = {
                                         } else {
                                             link = linkElement.href || linkElement.getAttribute("data-rurl");
                                         }
-                            
+
                                         if (link) {
                                             let id;
-                            
+
                                             if (location.hostname === "www.youtube.com" && /\/watch\?v=/.test(link)) {
                                                 id = link.match(/\/watch\?v=([^&]+)/)[1];
                                             } else if (location.hostname === "www.facebook.com" && (/\/watch\?v=/.test(link) || /youtu\.be/.test(link))) {
@@ -83,18 +83,18 @@ const chromeExtension = {
                                             } else if (location.hostname === "www.bing.com" && /watch\?v=/.test(link)) {
                                                 id = link.split("watch?v=")[1];
                                             }
-                            
+
                                             if (id && !ytIDs.includes(id)) {
                                                 ytIDs.push(id);
                                             }
                                         }
                                     });
                                 }
-                            
+
                                 if (iframes.length > 0) {
                                     iframes.forEach(iframeElement => {
                                         const src = iframeElement.src;
-                            
+
                                         if (/www\.youtube\.com\/embed/.test(src)) {
                                             const ifrm_id = src.match(/embed\/([^&?]+)/)[1];
                                             if (ifrm_id && !ytIDs.includes(ifrm_id)) {
@@ -103,7 +103,7 @@ const chromeExtension = {
                                         }
                                     });
                                 }
-                            
+
                                 chrome.runtime.sendMessage({ from: "content", found: ytIDs.length > 0, send: ytIDs });
                             }
                         }, function (res) {
@@ -124,53 +124,71 @@ const chromeExtension = {
         });
     },
     // Function to construct and update playlist data
-    constrObj: async (title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, action) => {
-        let playlistData = await chrome.storage.local.get('playlist');
-        playlistData = playlistData.playlist || {};
+    constrObj: (title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, action) => {
+        chrome.storage.local.get('playlist', function (data) {
+            var objConstr = {},
+                objStored = data.playlist || {},
+                objKeys = Object.keys(objStored);
 
-        playlistData[title] = {
-            date_modified,
-            description,
-            status,
-            lastAdded,
-            plays: count_plays,
-            videos: num_vids,
-            thumbnails,
-            image: img_src,
-            link,
-        };
+            if (!objKeys.length) {
+                objConstr[title] = {};
+                objConstr[title].date_modified = date_modified.toISOString();
+                objConstr[title].description = description;
+                objConstr[title].status = status;
+                objConstr[title].lastAdded = lastAdded;
+                objConstr[title].plays = count_plays;
+                objConstr[title].videos = num_vids;
+                objConstr[title].thumbnails = thumbnails;
+                objConstr[title].image = img_src;
+                objConstr[title].link = link;
+            } else {
+                objStored[title] = {};
+                objStored[title].date_modified = date_modified.toISOString();
+                objStored[title].description = description;
+                objStored[title].status = status;
+                objStored[title].lastAdded = lastAdded;
+                objStored[title].plays = count_plays;
+                objStored[title].videos = num_vids;
+                objStored[title].thumbnails = thumbnails;
+                objStored[title].image = img_src;
+                objStored[title].link = link;
+            }
 
-        await chrome.storage.local.set({ 'playlist': playlistData });
+            console.log('objConstr', objConstr);
+            console.log('objStored', objStored);
 
-        // Send message based on action
-        switch (action) {
-            case "ADD_VIDEO":
-                chrome.runtime.sendMessage({ data: "ADDED_VIDEO" });
-                break;
-            case "PLAY_PLAYLIST":
-                chrome.runtime.sendMessage({ data: "PLAYED_PLAYLIST" });
-                break;
-            case "CREATE_PLAYLIST":
-                chrome.runtime.sendMessage({ data: "CREATED_PLAYLIST" });
-                break;
-            case "SAVE_PLAYLIST":
-                chrome.runtime.sendMessage({ data: "SAVED_PLAYLIST" });
-                break;
-            case "SAVE_VIDEO_THUMB":
-                chrome.runtime.sendMessage({ data: "SAVED_VIDEO_THUMB" });
-                break;
-            case "SAVE_VIDEO_POS_THUMB":
-                chrome.runtime.sendMessage({ data: "SAVED_VIDEO_POS_THUMB" });
-                break;
-            case "DELETE_VIDEO":
-                chrome.runtime.sendMessage({ data: "DELETED_VIDEO" });
-                break;
-            case "SCAN_ADD_VIDEO":
-                chrome.runtime.sendMessage({ data: "SCANNED_ADDED_VIDEO" });
-                break;
-            default:
-                break;
-        }
+            chrome.storage.local.set({ 'playlist': !objKeys.length ? objConstr : objStored }, function () {
+                // Send message based on action
+                switch (action) {
+                    case "ADD_VIDEO":
+                        chrome.runtime.sendMessage({ data: "ADDED_VIDEO" });
+                        break;
+                    case "PLAY_PLAYLIST":
+                        chrome.runtime.sendMessage({ data: "PLAYED_PLAYLIST" });
+                        break;
+                    case "CREATE_PLAYLIST":
+                        chrome.runtime.sendMessage({ data: "CREATED_PLAYLIST" });
+                        break;
+                    case "SAVE_PLAYLIST":
+                        chrome.runtime.sendMessage({ data: "SAVED_PLAYLIST" });
+                        break;
+                    case "SAVE_VIDEO_THUMB":
+                        chrome.runtime.sendMessage({ data: "SAVED_VIDEO_THUMB" });
+                        break;
+                    case "SAVE_VIDEO_POS_THUMB":
+                        chrome.runtime.sendMessage({ data: "SAVED_VIDEO_POS_THUMB" });
+                        break;
+                    case "DELETE_VIDEO":
+                        chrome.runtime.sendMessage({ data: "DELETED_VIDEO" });
+                        break;
+                    case "SCAN_ADD_VIDEO":
+                        chrome.runtime.sendMessage({ data: "SCANNED_ADDED_VIDEO" });
+                        break;
+                    default:
+                        break;
+                }
+            });
+        });
     },
     // Function to update playlist with new videos
     updatePlaylist: (caller, callback) => {
@@ -256,21 +274,23 @@ const chromeExtension = {
                     const data = await response.json();
                     let lastAdded = data.title || "";
 
-                    await chromeExtension.constrObj(playlist_name, date_modified, playlist_description, status, lastAdded, count_plays, num_vids, thumbnails, playlist_image, link, playlist_action);
+                    chromeExtension.constrObj(playlist_name, date_modified, playlist_description, status, lastAdded, count_plays, num_vids, thumbnails, playlist_image, link, playlist_action);
                 } else {
                     throw new Error("Failed to fetch last added video");
                 }
             } catch (error) {
                 console.error("Error fetching last added video:", error);
+
                 if (caller.playlist_action === "ADD_VIDEO") {
                     chrome.runtime.sendMessage({ data: "VIDEO_UNAVAILABLE" });
                 }
+
                 if (caller.playlist_action === "PLAY_PLAYLIST") {
-                    await chromeExtension.constrObj(playlist_name, date_modified, playlist_description, status, "", count_plays, num_vids, thumbnails, playlist_image, link, playlist_action);
+                    chromeExtension.constrObj(playlist_name, date_modified, playlist_description, status, "", count_plays, num_vids, thumbnails, playlist_image, link, playlist_action);
                 }
             }
         } else {
-            await chromeExtension.constrObj(playlist_name, date_modified, playlist_description, "disabled", "", 0, 0, "", "", "", playlist_action);
+            chromeExtension.constrObj(playlist_name, date_modified, playlist_description, "disabled", "", 0, 0, "", playlist_image || "", "", playlist_action);
         }
     },
 };

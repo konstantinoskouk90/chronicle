@@ -220,8 +220,6 @@ $(document).ready(function () {
     createPlaylist();
   });
 
-  console.log('made it');
-
   //PLAYLIST VIEW
   function createPlaylist(msg, pg) {
 
@@ -238,7 +236,8 @@ $(document).ready(function () {
 
       $(RESULTS_WRAPPER).text("");
 
-      playlists.forEach(function (k, i) {
+      playlists.forEach(function (k, _i) {
+        console.log('k', k);
 
         count++;
 
@@ -249,10 +248,8 @@ $(document).ready(function () {
         createDOM(n, k, p, s);
       });
 
-      console.log('createPlaylist - data', data);
-      console.log('createPlaylist - msg', msg);
-
       if (msg === "UPDATE") {
+        console.log('createPlaylist, UPDATE');
 
         $(RESULTS_ACTIVE).removeClass("active-page");
         $(RESULTS + ":nth(" + (pg - 1) + ")").addClass("active-page");
@@ -260,6 +257,8 @@ $(document).ready(function () {
         $(PAGE_CURRENT).text(pg);
 
         if (storeNum !== undefined) {
+          console.log('$(PLAYLIST + ":nth(" + storeNum + ")")', $(PLAYLIST + ":nth(" + storeNum + ")"));
+
           $(PLAYLIST + ":nth(" + storeNum + ")").next().next().css("border-color", "#bbb999");
           $(PLAYLIST + ":nth(" + storeNum + ")").next().next().children().css("color", "#bbb999");
           $(PLAYLIST + ":nth(" + storeNum + ")").parent().css("border-color", "#bbb999");
@@ -302,7 +301,7 @@ $(document).ready(function () {
     var keys = [], count = -1, searchField = new RegExp($(SEARCH_PLAY).val(), "i");
 
     $.post(window.location.href, function () {
-      chrome.storage.local.get('playlist', function (data) {
+      chrome.storage.local.get('playlist', (data) => {
         var objParse = data.playlist || {}, playlists = Object.keys(objParse);
 
         playlists.sort();
@@ -400,7 +399,7 @@ $(document).ready(function () {
         }
 
         if (!!searchAnimation) {
-          playlistMessage("added_video");
+          playlistMessage("added-video");
 
           searchAnimation = false;
         }
@@ -424,7 +423,7 @@ $(document).ready(function () {
       vid_added = 0;
       vid_temp = 0;
 
-      chrome.storage.local.get('video', function (data) {
+      chrome.storage.local.get('video', (data) => {
         var objParse = data.video || {}, videos = Object.keys(objParse);
 
         videos.forEach(function (k, i) {
@@ -509,11 +508,13 @@ $(document).ready(function () {
   }, 250));
 
   function playlistPrev(sel) {
+    console.log('sel', sel);
+
     if (sel !== undefined) {
-      chrome.storage.local.get('playlist', function (data) {
+      chrome.storage.local.get('playlist', (data) => {
         var hid = $(sel).attr("hidden_title"),
           ttl = hid,
-          obj = data.playlist ? data.playlist[hid] : {},
+          obj = data.playlist !== undefined && JSON.stringify(data.playlist) !== "{}" ? data.playlist[hid] : {},
           dsc = obj.description,
           dmo = obj.date_modified,
           img = obj.image,
@@ -528,11 +529,16 @@ $(document).ready(function () {
           dfm = dat.getMonth() - crm,
           dfy = dat.getFullYear() - cry;
 
+        console.log('hid', hid);
+        console.log('JSON.stringify(data.playlist)', JSON.stringify(data.playlist));
+        console.log('data.playlist[hid]', data.playlist[hid]);
+
         //Set iframe playlist source
         if (vid > 0 && l !== $(PREVIEW_POPUP_VIDEO + " iframe").attr("src")) {
-
           var e = obj.link.match(/video_ids=(.*)/)[1],
             l = "https://www.youtube.com/embed?rel=0&amp;showinfo=0&amp;iv_load_policy=3&amp;controls=2&amp;fs=0&amp;loop=1&amp;color=white&amp;disablekb=1&amp;enablejsapi=1&amp;version=3&amp;autoplay=0&amp;playlist=" + e;
+
+          console.log('Set iframe playlist source', e);
 
           $(PREVIEW_POPUP_VIDEO + " iframe").attr("src", l);
         } else {
@@ -555,6 +561,8 @@ $(document).ready(function () {
         } else {
           crm = crm + 1;
         }
+
+        console.log('fld', fld);
 
         if (fld.getDate() === dat.getDate() && fld.getMonth() === dat.getMonth() && fld.getFullYear() === dat.getFullYear()) {
           $(MODIFIED_VIDEOS).text("Updated Today");
@@ -585,7 +593,7 @@ $(document).ready(function () {
           $(PLAYLIST_NUM_VIDEOS).css("width", "54.5px");
         }
 
-        if (Object.keys(obj).length === 1) {
+        if (Object.keys(data.playlist || {}).length === 1) {
           toggleContent("FADE_IN");
         }
 
@@ -600,7 +608,7 @@ $(document).ready(function () {
         $(COPIED_LINK).text(obj.link);
       });
     } else {
-      chrome.storage.local.get('playlist', function (data) {
+      chrome.storage.local.get('playlist', (data) => {
         var obj = data.playlist || {};
 
         if (!Object.keys(obj).length) {
@@ -639,11 +647,15 @@ $(document).ready(function () {
 
   // ACTIVE VIDEO PREVIEW
   function videoPrev(sel) {
+    console.log('sel', sel);
     if (sel !== undefined) {
-      chrome.storage.local.get(['playlist', 'video'], function (data) {
+      chrome.storage.local.get(['playlist', 'video'], (data) => {
+        console.log('videoPrev, data', $(sel));
+        console.log('videoPrev, $(sel)', $(sel));
+
         var hid = $(sel).attr("href"),
           obj = data.video ? data.video[hid] : {},
-          len = Object.keys(obj).length,
+          len = Object.keys(data.video || {}).length,
           ttl = obj.video_title,
           aun = obj.author_name,
           auu = obj.author_url,
@@ -703,7 +715,7 @@ $(document).ready(function () {
         $(COPIED_LINK).text("https://www.youtube.com/watch?v=" + hid.split("watch?v=")[1]);
       });
     } else {
-      chrome.storage.local.get('video', function (data) {
+      chrome.storage.local.get('video', (data) => {
         var videoData = data.video || {};
 
         if (Object.keys(videoData).length === 0) {
@@ -755,6 +767,11 @@ $(document).ready(function () {
       p = t + "alphabet/" + f + 1 + ".png";
     }
 
+    console.log('n', n);
+    console.log('k', k);
+    console.log('p', p);
+    console.log('s', s);
+
     $(RESULTS + ":nth(" + n + ")").append('<div class="image-wrapper"></div>');
     $(IMG_WRAPPER + ":nth(" + added + ")").append('<img src="' + p + '" hidden_title="' + k + '" class="playlist-favorite ' + s + '" />');
     $(IMG_WRAPPER + ":nth(" + added + ")").append('<div class="image-title"></div>');
@@ -776,7 +793,7 @@ $(document).ready(function () {
     $(HEADER_RIGHT).css("cursor", "not-allowed");
     $(RESET_APP_WRAPPER + " img").css("cursor", "not-allowed");
 
-    chrome.storage.local.get('playlist', function (data) {
+    chrome.storage.local.get('playlist', (data) => {
       var obj = data.playlist ? data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")] : {},
         thb = obj.thumbnails,
         vid = Number(obj.videos);
@@ -921,8 +938,7 @@ $(document).ready(function () {
     if (navigator.onLine && $(this).css("cursor") !== "wait") {
       var self = this;
 
-      // Retrieve playlist data from chrome.storage.local
-      chrome.storage.local.get('playlist', function (data) {
+      chrome.storage.local.get('playlist', (data) => {
         var pla, send = {},
           pg = parseValue($(PAGE_CURRENT).text()),
           obj = data.playlist ? data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")] : {},
@@ -935,7 +951,7 @@ $(document).ready(function () {
           pla = obj.plays;
         }
 
-        send.playlist_name = ($(PLAYLIST_ACTIVE).attr("hidden_title")).replace(/%20/g, "+");
+        send.playlist_name = ($(PLAYLIST_ACTIVE).attr("hidden_title"));
         send.playlist_description = obj.description;
         send.playlist_image = obj.image;
 
@@ -961,8 +977,8 @@ $(document).ready(function () {
           }
         }
 
-        chrome.storage.local.get('playlist_num_videos_hover', function (data) {
-          if ($(self).is(PLAY_BUTTON_WRAPPER) && lnk !== "" && data.playlist_num_videos_hover) {
+        chrome.storage.local.get('playlist_num_videos_hover', (data) => {
+          if ($(self).is(PLAY_BUTTON_WRAPPER) && lnk !== "" && data.playlist_num_videos_hover && JSON.stringify(data.playlist_num_videos_hover) !== "{}") {
             $(self).css("cursor", "wait");
 
             send.playlist_action = "PLAY_PLAYLIST";
@@ -1036,12 +1052,13 @@ $(document).ready(function () {
           if ($(self).is(ADD_VID_ON_PAGE) || $(self).is(ADD_VID_BY_URL)) {
             // Send message to background script to update playlist
             chrome.runtime.sendMessage({ action: "updatePlaylist", send: send });
+
+            console.log('ADD_VID_ON_PAGE, updatePlaylist', send);
           }
 
           if ($(self).is(PLAY_BUTTON_WRAPPER)) {
-            // Check chrome.storage.local for playlist_num_videos_hover
-            chrome.storage.local.get("playlist_num_videos_hover", function (data) {
-              if (!data.playlist_num_videos_hover) {
+            chrome.storage.local.get("playlist_num_videos_hover", (data) => {
+              if (!data.playlist_num_videos_hover && JSON.stringify(data.playlist_num_videos_hover) !== "{}") {
                 if (send.playlist !== undefined) {
                   chrome.runtime.sendMessage({ action: "createPlaylist", send: send });
                 } else {
@@ -1056,6 +1073,8 @@ $(document).ready(function () {
 
             var data = message.data;
 
+            console.log('ADD_VID_ON_PAGE, addListener, data', data);
+
             if (data === "ADDED_VIDEO" || data === "PLAYED_PLAYLIST") {
               for (var i = 0; i < $(PLAYLIST).length; i++) {
                 if ($(PLAYLIST + ":nth(" + i + ")").hasClass("active-playlist")) {
@@ -1067,6 +1086,7 @@ $(document).ready(function () {
                 searchAnimation = true;
                 $(SEARCH_PLAY).trigger("keyup", [pg]);
               } else {
+                console.log('ADD_VID_ON_PAGE, createPlaylist("UPDATE", pg)', pg);
                 createPlaylist("UPDATE", pg);
               }
 
@@ -1177,7 +1197,7 @@ $(document).ready(function () {
 
   //RETURN TO MAIN MENU
   $(document).on("click", MENU_BACK_IMG, function () {
-    chrome.storage.local.remove('video', function () {
+    chrome.storage.local.remove('video', () => {
 
       $(ACTIVE_PLAYLIST_VIDEOS).remove();
       $(SEARCH_VID).val("");
@@ -1286,7 +1306,7 @@ $(document).ready(function () {
           $(OVERLAY).fadeIn("normal");
           $(SCAN_PAGE_POPUP).show();
 
-          chrome.storage.local.get('playlist_scanned', function (data) {
+          chrome.storage.local.get('playlist_scanned', (data) => {
 
             var idlst;
 
@@ -1345,7 +1365,7 @@ $(document).ready(function () {
   }
 
   function resetScannedData() {
-    chrome.storage.local.remove('playlist_scanned', function () {
+    chrome.storage.local.remove('playlist_scanned', () => {
       // Reset other variables as needed
       scan_active_title = [];
       scan_active_author_name = [];
@@ -1394,9 +1414,9 @@ $(document).ready(function () {
 
   //API CALL TO GET SCANNED DETAILS
   function scanAPI(cnt, num) {
-    var playlistName = $(TITLE_VIDEOS).text().replace(/%20/g, "+");
+    var playlistName = $(TITLE_VIDEOS).text();
 
-    chrome.storage.local.get('playlist', function (data) {
+    chrome.storage.local.get('playlist', (data) => {
       var playlist = data.playlist || {};
       var lnk = playlist[playlistName].link;
 
@@ -1475,11 +1495,11 @@ $(document).ready(function () {
   function renderScannedUI(num, link, title, author, author_url, thumbnail) {
     var len,
       state = "add",
-      playlistTitle = $(TITLE_VIDEOS).text().replace(/%20/g, "+"),
+      playlistTitle = $(TITLE_VIDEOS).text(),
       ytID = link.match(/watch\?v\=([^&]+)/)[1],
       savedState = [];
 
-    chrome.storage.local.get("playlist", function (data) {
+    chrome.storage.local.get("playlist", (data) => {
       var playlist = data.playlist || {};
       var plIDs = playlist[playlistTitle] ? playlist[playlistTitle].link : "";
 
@@ -1541,9 +1561,9 @@ $(document).ready(function () {
     }
 
     if ($(this).parent().css("cursor") !== "not-allowed") {
-      var playlistTitle = $(TITLE_VIDEOS).text().replace(/%20/g, "+");
+      var playlistTitle = $(TITLE_VIDEOS).text();
 
-      chrome.storage.local.get("playlist", function (data) {
+      chrome.storage.local.get("playlist", (data) => {
         var playlist = data.playlist || {};
         var obj = playlist[playlistTitle] || { link: "" };
 
@@ -1608,7 +1628,7 @@ $(document).ready(function () {
     var playlistTitle = $(PLAYLIST_ACTIVE).attr("hidden_title");
     var tv, active_obj;
 
-    chrome.storage.local.get("playlist", function (data) {
+    chrome.storage.local.get("playlist", (data) => {
       var playlist = data.playlist || {};
       active_obj = playlist[playlistTitle];
 
@@ -1696,11 +1716,13 @@ $(document).ready(function () {
               setTimeout(function () {
                 if (!!$(SEARCH_PLAY).val().length) {
                   searchAnimation = true;
+
                   $(SEARCH_PLAY).trigger("keyup", [pg]);
                 } else {
                   createPlaylist("UPDATE", pg);
+
                   setTimeout(function () {
-                    playlistMessage("added_video");
+                    playlistMessage("added-video");
                   }, 50);
                 }
               }, 100);
@@ -1743,7 +1765,7 @@ $(document).ready(function () {
   // VIEW PLAYLIST VIDEOS
   $(document).on("click", VIEW_VIDS, function (event) {
     if (navigator.onLine && $(this).css("cursor") !== "wait") {
-      chrome.storage.local.get("playlist", function (data) {
+      chrome.storage.local.get("playlist", (data) => {
         vid_added = 0;
         vid_temp = 0;
 
@@ -1800,7 +1822,7 @@ $(document).ready(function () {
 
     $.getJSON("https://www.youtube.com/oembed?url=", { format: "json", url: lnk })
       .done(function (res) {
-        chrome.storage.local.remove('video', function () {
+        chrome.storage.local.remove('video', () => {
           if (res.title === undefined) {
             res.title = "This video is unavailable";
           }
@@ -1838,7 +1860,7 @@ $(document).ready(function () {
               };
             }
 
-            chrome.storage.local.set({ "video": obj }, function () {
+            chrome.storage.local.set({ "video": obj }, () => {
               active_title = [];
               active_author_name = [];
               active_author_url = [];
@@ -1886,13 +1908,13 @@ $(document).ready(function () {
         $(PLAYLIST_ACTIVE).next().next().fadeOut("normal");
 
         $(PLAYLIST_ACTIVE).fadeOut("normal", function () {
-          chrome.storage.local.get('playlist', function (data) {
+          chrome.storage.local.get('playlist', (data) => {
             var pg, temp = data.playlist || {};
-            var playlistName = $(TITLE_VIDEOS).text().replace(/%20/g, "+");
+            var playlistName = $(TITLE_VIDEOS).text();
 
             delete temp[playlistName];
 
-            chrome.storage.local.set({ 'playlist': temp }, function () {
+            chrome.storage.local.set({ 'playlist': temp }, () => {
               for (var i = 0; i < $(PLAYLIST).length; i++) {
                 if ($(".playlist-favorite:nth(" + i + ")").hasClass("active-playlist")) {
                   if (i !== ($(PLAYLIST).length - 1)) {
@@ -1951,7 +1973,7 @@ $(document).ready(function () {
         send.playlist_name = playlistActive;
         send.playlist_action = "DELETE_VIDEO";
 
-        chrome.storage.local.get('playlist', function (data) {
+        chrome.storage.local.get('playlist', (data) => {
           var playlist = data.playlist || {};
           var playlistDetails = playlist[playlistActive];
 
@@ -1993,7 +2015,7 @@ $(document).ready(function () {
                 chrome.runtime.onMessage.removeListener(listener);
 
                 if (message.data === "DELETED_VIDEO") {
-                  chrome.storage.local.get('video', function (storage) {
+                  chrome.storage.local.get('video', (storage) => {
                     var temp = storage.video || {};
                     delete temp[$(ACTIVE_PLAYLIST_VIDEO).attr("href")];
                     var tempKeys = Object.keys(temp);
@@ -2002,7 +2024,7 @@ $(document).ready(function () {
                       temp[tempKeys[x]].video_position = Number(temp[tempKeys[x]].video_position) - 1;
                     }
 
-                    chrome.storage.local.set({ "video": temp }, function () {
+                    chrome.storage.local.set({ "video": temp }, () => {
                       for (var i = 0; i < $(VIDEO_PLAYLIST).length; i++) {
                         if ($(VIDEO_PLAYLIST + ":nth(" + i + ")").hasClass("active-playlist-video")) {
                           if (i !== ($(VIDEO_PLAYLIST).length - 1)) {
@@ -2041,7 +2063,7 @@ $(document).ready(function () {
         act = $(PLAYLIST_ACTIVE).attr("hidden_title"),
         cur_pos;
 
-      chrome.storage.local.get(["playlist", "video"], function (data) {
+      chrome.storage.local.get(["playlist", "video"], (data) => {
         var storeObj = data.playlist || {};
         var objKeys = Object.keys(storeObj);
 
@@ -2061,10 +2083,12 @@ $(document).ready(function () {
           cur_pos = Number($(ACTIVE_ELEMENT).attr("position"));
         }
 
+        console.log('entering 1', send);
+
         if ($(MAIN_POPUP_CREATE).text() === "SAVE" && send.playlist_name !== "") {
           var storeThumb, storePosition,
             storageActive = storeObj[act],
-            storageThumbs = storageActive.thumbnails,
+            storageThumbs = send.thumbnails ? storageActive.thumbnails : "",
             storageVideos = storageActive.videos,
             storageLink = storageActive.link,
             storagePlays = storageActive.plays,
@@ -2217,18 +2241,54 @@ $(document).ready(function () {
         var permit, active = $(PLAYLIST_ACTIVE).attr("hidden_title");
         var playlistNum;
 
-        chrome.storage.local.get(["playlist", "video"], function (data) {
-          var playlist = data.playlist || {};
-          var video = data.video;
+        playlistNum = Object.keys(storeObj).length;
 
-          playlistNum = Object.keys(playlist).length;
+        if ($(TITLE_APP_POPUP).text() === "Create Playlist") {
+          console.log('entering 2', send);
 
-          if ($(TITLE_APP_POPUP).text() === "Create Playlist") {
-            objKeys = Object.keys(playlist);
+          if (!!objKeys.length) {
+            for (var x = 0; x < objKeys.length; x++) {
+              if (objKeys[x] === send.playlist_name) {
+                popupErrorMessage("PLAYLIST ALREADY EXISTS");
+                permit = "EXISTS";
+                break;
+              } else {
+                permit = "UPDATE";
+              }
+            }
+          }
 
-            if (!!objKeys.length) {
-              for (var x = 0; x < objKeys.length; x++) {
-                if (objKeys[x] === send.playlist_name) {
+          if (!objKeys.length) {
+            permit = "UPDATE";
+          }
+
+          if (playlistNum === 200) {
+            popupErrorMessage("MAXIMUM NUMBER OF PLAYLISTS REACHED");
+            permit = "MAX NUMBER";
+          }
+
+          if (send.playlist_name === "") {
+            popupErrorMessage("NO PLAYLIST TITLE");
+            permit = "NO TITLE";
+          }
+        }
+
+        console.log('entering 3', permit);
+
+        chrome.storage.local.get(["playlist", "playlist_details", "video_details"], (data) => {
+          if ($(TITLE_APP_POPUP).text() === "Edit Details" && $(LINK_PLAYLIST_TEXT).is(":visible")) {
+            var playlistDetails = data.playlist_details;
+            var objKeys = Object.keys(data || {});
+
+            if ($(NEW_PLAYLIST_NAME).val() === playlistDetails.title &&
+              $(NEW_PLAYLIST_DESCRIPTION).val() === playlistDetails.description &&
+              $(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src") === playlistDetails.image) {
+              permit = "DO NOT UPDATE";
+            }
+
+            if (send.playlist_name !== active) {
+              for (var k = 0; k < objKeys.length; k++) {
+                if (objKeys[k] === send.playlist_name) {
                   popupErrorMessage("PLAYLIST ALREADY EXISTS");
                   permit = "EXISTS";
                   break;
@@ -2238,13 +2298,10 @@ $(document).ready(function () {
               }
             }
 
-            if (!objKeys.length) {
+            if ($(NEW_PLAYLIST_NAME).val() === playlistDetails.title &&
+              ($(NEW_PLAYLIST_DESCRIPTION).val() !== playlistDetails.description ||
+                $(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src") !== playlistDetails.image)) {
               permit = "UPDATE";
-            }
-
-            if (playlistNum === 200) {
-              popupErrorMessage("MAXIMUM NUMBER OF PLAYLISTS REACHED");
-              permit = "MAX NUMBER";
             }
 
             if (send.playlist_name === "") {
@@ -2253,159 +2310,135 @@ $(document).ready(function () {
             }
           }
 
-          chrome.storage.local.get(["playlist", "playlist_details", "video_details"], function (data) {
+          if ($(TITLE_APP_POPUP).text() === "Edit Details" && $(LINK_VIDEO_TEXT).is(":visible")) {
 
-            if ($(TITLE_APP_POPUP).text() === "Edit Details" && $(LINK_PLAYLIST_TEXT).is(":visible")) {
-              var playlistDetails = data.playlist_details;
-              var objKeys = Object.keys(playlist);
+            var videoDetails = data.video_details || {};
 
-              if ($(NEW_PLAYLIST_NAME).val() === playlistDetails.title &&
-                $(NEW_PLAYLIST_DESCRIPTION).val() === playlistDetails.description &&
-                $(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src") === playlistDetails.image) {
-                permit = "DO NOT UPDATE";
-              }
+            if ($(POSITION_TOTAL + " " + ACTIVE_ELEMENT).attr("position") === videoDetails.position && $(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src") === videoDetails.image) {
+              permit = "DO NOT UPDATE";
+            } else {
+              permit = "UPDATE";
+            }
 
-              if (send.playlist_name !== active) {
-                for (var k = 0; k < objKeys.length; k++) {
-                  if (objKeys[k] === send.playlist_name) {
-                    popupErrorMessage("PLAYLIST ALREADY EXISTS");
-                    permit = "EXISTS";
-                    break;
-                  } else {
-                    permit = "UPDATE";
+            if (/\.\.\/assets\/images.*(NoThumbOne|NoThumbTwo|NoThumbThree|NoThumbFour).*png/.test($(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src"))) {
+              popupErrorMessage("THUMBNAIL NOT AVAILABLE");
+              permit = "INVALID THUMBNAIL";
+            }
+          }
+
+          if (permit === "UPDATE") {
+            $(OVERLAY).hide("normal", function () {
+              console.log('entering 4', send);
+
+              hideAddVids();
+
+              chrome.runtime.sendMessage({ action: 'createPlaylist', send: send });
+
+              chrome.runtime.onMessage.addListener(function (message) {
+
+                chrome.runtime.onMessage.removeListener(arguments.callee);
+
+                chrome.storage.local.get("playlist", (data) => {
+
+                  if ((message.data === "CREATED_PLAYLIST" || message.data === "SAVED_PLAYLIST") && !$(SEARCH_PLAY).val().length) {
+                    console.log('entering 5', data);
+                    sortAll = Object.keys(data.playlist || {}).sort();
                   }
-                }
-              }
 
-              if ($(NEW_PLAYLIST_NAME).val() === playlistDetails.title &&
-                ($(NEW_PLAYLIST_DESCRIPTION).val() !== playlistDetails.description ||
-                  $(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src") !== playlistDetails.image)) {
-                permit = "UPDATE";
-              }
+                  if (message.data === "CREATED_PLAYLIST" && !$(SEARCH_PLAY).val().length) {
+                    console.log('entering 6', data);
+                    $(SEARCH_PLAY).val("");
+                    storeNum = sortAll.indexOf(send.playlist_name);
+                    createPlaylist("UPDATE", Math.floor(storeNum / 12) + 1);
+                  }
 
-              if (send.playlist_name === "") {
-                popupErrorMessage("NO PLAYLIST TITLE");
-                permit = "NO TITLE";
-              }
-            }
+                  if (message.data === "CREATED_PLAYLIST" && !!$(SEARCH_PLAY).val().length) {
+                    console.log('entering 7', data);
+                    var pg = parseValue($(PAGE_CURRENT).text());
+                    $(SEARCH_PLAY).trigger("keyup", [pg, undefined, send.playlist_name]);
+                  }
 
-            if ($(TITLE_APP_POPUP).text() === "Edit Details" && $(LINK_VIDEO_TEXT).is(":visible")) {
+                  if (message.data === "CREATED_PLAYLIST") {
+                    console.log('entering 8', data);
+                    trackEvent("event", "Playlist", "create", "Create", 1);
+                  }
 
-              var videoDetails = data.video_details || {};
+                  if (message.data === "SAVED_PLAYLIST") {
+                    console.log('entering 9', data);
 
-              if ($(POSITION_TOTAL + " " + ACTIVE_ELEMENT).attr("position") === videoDetails.position && $(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src") === videoDetails.image) {
-                permit = "DO NOT UPDATE";
-              } else {
-                permit = "UPDATE";
-              }
-
-              if (/\.\.\/assets\/images.*(NoThumbOne|NoThumbTwo|NoThumbThree|NoThumbFour).*png/.test($(MAIN_POPUP_PREVIEW_BOX_IMG).attr("src"))) {
-                popupErrorMessage("THUMBNAIL NOT AVAILABLE");
-                permit = "INVALID THUMBNAIL";
-              }
-            }
-
-            if (permit === "UPDATE") {
-              $(OVERLAY).hide("normal", function () {
-
-                hideAddVids();
-
-                chrome.runtime.sendMessage({ action: 'createPlaylist', send: send });
-
-                chrome.runtime.onMessage.addListener(function (message) {
-
-                  chrome.runtime.onMessage.removeListener(arguments.callee);
-
-                  chrome.storage.local.get("playlist", function (data) {
-
-                    if ((message.data === "CREATED_PLAYLIST" || message.data === "SAVED_PLAYLIST") && !$(SEARCH_PLAY).val().length) {
-                      sortAll = Object.keys(data.playlist || {}).sort();
-                    }
-
-                    if (message.data === "CREATED_PLAYLIST" && !$(SEARCH_PLAY).val().length) {
-                      $(SEARCH_PLAY).val("");
-                      storeNum = sortAll.indexOf(send.playlist_name.replace(/%20/g, "+"));
+                    if (!!$(SEARCH_PLAY).val().length) {
+                      for (var t = 0; t < $(PLAYLIST).length; t++) {
+                        if ($(PLAYLIST + ":nth(" + t + ")").hasClass("active-playlist")) {
+                          saveNum = t;
+                        }
+                      }
+                      $(SEARCH_PLAY).trigger("keyup", [undefined, "SAVE_CHANGES", send.playlist_name]);
+                    } else {
+                      storeNum = sortAll.indexOf(send.playlist_name);
                       createPlaylist("UPDATE", Math.floor(storeNum / 12) + 1);
                     }
 
-                    if (message.data === "CREATED_PLAYLIST" && !!$(SEARCH_PLAY).val().length) {
-                      var pg = parseValue($(PAGE_CURRENT).text());
-                      $(SEARCH_PLAY).trigger("keyup", [pg, undefined, send.playlist_name.replace(/%20/g, "+")]);
-                    }
+                    trackEvent("event", "Playlist", "save", "Save", 1);
+                  }
 
-                    if (message.data === "CREATED_PLAYLIST") {
-                      trackEvent("event", "Playlist", "create", "Create", 1);
-                    }
+                  if (message.data === "SAVED_VIDEO_THUMB") {
+                    console.log('entering 10', data);
 
-                    if (message.data === "SAVED_PLAYLIST") {
-                      if (!!$(SEARCH_PLAY).val().length) {
-                        for (var t = 0; t < $(PLAYLIST).length; t++) {
-                          if ($(PLAYLIST + ":nth(" + t + ")").hasClass("active-playlist")) {
-                            saveNum = t;
-                          }
-                        }
-                        $(SEARCH_PLAY).trigger("keyup", [undefined, "SAVE_CHANGES", send.playlist_name]);
-                      } else {
-                        storeNum = sortAll.indexOf(send.playlist_name);
-                        createPlaylist("UPDATE", Math.floor(storeNum / 12) + 1);
-                      }
+                    var pg_save_thumb = parseValue($(VID_PAGE_CURRENT).text());
 
-                      trackEvent("event", "Playlist", "save", "Save", 1);
-                    }
+                    if (!!$(SEARCH_VID).val().length) {
+                      chrome.storage.local.get("video", (data) => {
+                        video = data.video;
 
-                    if (message.data === "SAVED_VIDEO_THUMB") {
-                      var pg_save_thumb = parseValue($(VID_PAGE_CURRENT).text());
-
-                      if (!!$(SEARCH_VID).val().length) {
-                        chrome.storage.local.get("video", function (data) {
-                          video = data.video;
-
-                          for (var z = 0; z < $(VIDEO_PLAYLIST).length; z++) {
-                            if ($(VIDEO_PLAYLIST + ":nth(" + z + ")").hasClass("active-playlist-video")) {
-                              if (!!$(VIDEO_PLAYLIST).length) {
-                                storeVidNum = z;
-                              }
+                        for (var z = 0; z < $(VIDEO_PLAYLIST).length; z++) {
+                          if ($(VIDEO_PLAYLIST + ":nth(" + z + ")").hasClass("active-playlist-video")) {
+                            if (!!$(VIDEO_PLAYLIST).length) {
+                              storeVidNum = z;
                             }
                           }
-
-                          $(SEARCH_VID).trigger("keyup", [pg_save_thumb]);
-
-                          trackEvent("event", "Video", "save", "Save", 1);
-                        });
-                      } else {
-                        storeVidNum = cur_pos;
+                        }
 
                         $(SEARCH_VID).trigger("keyup", [pg_save_thumb]);
 
                         trackEvent("event", "Video", "save", "Save", 1);
-                      }
-                    }
+                      });
+                    } else {
+                      storeVidNum = cur_pos;
 
-                    if (message.data === "SAVED_VIDEO_POS_THUMB") {
-                      var pg_save_pos_thumb;
-
-                      if (!!$(SEARCH_VID).val().length) {
-                        pg_save_pos_thumb = parseValue($(VID_PAGE_CURRENT).text());
-
-                        $(SEARCH_VID).trigger("keyup", [pg_save_pos_thumb, undefined, $(ACTIVE_PLAYLIST_VIDEO).attr("href").split("watch?v=")[1]]);
-                      } else {
-                        storeVidNum = cur_pos;
-                        pg_save_pos_thumb = Math.floor(cur_pos / 12) + 1;
-
-                        $(SEARCH_VID).trigger("keyup", [pg_save_pos_thumb]);
-                      }
+                      $(SEARCH_VID).trigger("keyup", [pg_save_thumb]);
 
                       trackEvent("event", "Video", "save", "Save", 1);
                     }
-                  });
+                  }
+
+                  if (message.data === "SAVED_VIDEO_POS_THUMB") {
+                    console.log('entering 11', data);
+
+                    var pg_save_pos_thumb;
+
+                    if (!!$(SEARCH_VID).val().length) {
+                      pg_save_pos_thumb = parseValue($(VID_PAGE_CURRENT).text());
+
+                      $(SEARCH_VID).trigger("keyup", [pg_save_pos_thumb, undefined, $(ACTIVE_PLAYLIST_VIDEO).attr("href").split("watch?v=")[1]]);
+                    } else {
+                      storeVidNum = cur_pos;
+                      pg_save_pos_thumb = Math.floor(cur_pos / 12) + 1;
+
+                      $(SEARCH_VID).trigger("keyup", [pg_save_pos_thumb]);
+                    }
+
+                    trackEvent("event", "Video", "save", "Save", 1);
+                  }
                 });
               });
-            }
+            });
+          }
 
-            if (permit === "DO NOT UPDATE") {
-              $(OVERLAY).hide("normal");
-            }
-          });
+          if (permit === "DO NOT UPDATE") {
+            console.log('entering 12', data);
+            
+            $(OVERLAY).hide("normal");
+          }
         });
       });
     } else {
@@ -2436,7 +2469,7 @@ $(document).ready(function () {
     }
 
     if ($(this).is(EDIT_PLAYLIST_WRAPPER) && $(EDIT_PLAYLIST_TEXT).is(":visible")) {
-      chrome.storage.local.get("playlist", function (data) {
+      chrome.storage.local.get("playlist", (data) => {
         var playlist = data.playlist || {};
         var activePlaylistTitle = $(PLAYLIST_ACTIVE).attr("hidden_title");
         var obj = playlist[activePlaylistTitle];
@@ -2474,7 +2507,7 @@ $(document).ready(function () {
       $(POSITION_ACTIVE).html("");
       $(POSITION_TOTAL).html("");
 
-      chrome.storage.local.get("video", function (data) {
+      chrome.storage.local.get("video", (data) => {
         var vid_posArr = [],
           objVid = data.video || {},
           objVidKeys = Object.keys(objVid);
@@ -2592,6 +2625,7 @@ $(document).ready(function () {
         scrollTo(element);
       }
     }
+
     if ($(this).is(DOWN_LIST)) {
       if (position < listLength - 1 && $("li" + ACTIVE_ELEMENT).next().text() !== "") {
         element = position + 1;
@@ -2605,7 +2639,6 @@ $(document).ready(function () {
   //YOUTUBE CHANNEL - NEW TAB
   $(document).on("click", YOUTUBE_CHANNEL, function () {
     if (navigator.onLine) {
-
       trackEvent("event", "Video", "channel", "YouTube Channel", 1);
 
       chrome.tabs.create({
@@ -2879,10 +2912,9 @@ $(document).ready(function () {
           $(OVERLAY).fadeIn("normal");
           $(PREVIEW_POPUP_VIDEO).fadeIn("normal");
 
-          // Save previewed video URL in chrome.storage.local
-          chrome.storage.local.set({ playlist_preview_play: $(PREVIEW_POPUP_VIDEO + " iframe").attr("src") });
-
-          $(PREVIEW_POPUP_VIDEO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+          chrome.storage.local.set({ playlist_preview_play: $(PREVIEW_POPUP_VIDEO + " iframe").attr("src") }, () => {
+            $(PREVIEW_POPUP_VIDEO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+          });
         } else {
           if ($(PREVIEW_PLAYLIST_TEXT).css("display") === "block") {
             playlistMessage("empty_playlist");
@@ -2914,7 +2946,6 @@ $(document).ready(function () {
       start = elem.selectionStart;
       end = elem.selectionEnd;
     } else {
-
       target = document.getElementById(targetId);
 
       if (!target) {
@@ -2925,6 +2956,7 @@ $(document).ready(function () {
         target.id = targetId;
         document.body.appendChild(target);
       }
+
       target.textContent = elem.textContent;
     }
 
@@ -2974,11 +3006,11 @@ $(document).ready(function () {
   $(document).on("change", WELCOME_CHECKBOX, function () {
     var isChecked = $(this).is(":checked");
 
-    chrome.storage.local.set({ "welcome_box": isChecked ? 1 : 0 }, function () {
-      if (!isChecked) {
-        chrome.storage.local.remove("welcome_box");
-      }
-    });
+    if (isChecked) {
+      chrome.storage.local.set({ "welcome_box": 1 });
+    } else {
+      chrome.storage.local.remove("welcome_box");
+    }
   });
 
   // Select all scanned videos
@@ -3115,14 +3147,15 @@ $(document).ready(function () {
       }
     }
     if ($(this).is(PLAYLIST_NUM_VIDEOS)) {
-      chrome.storage.local.set({ playlist_num_videos_hover: true });
-      $(PLAY_PLAYLIST_VIDEO).css("background-image", "url(../assets/images/play-video-hover.png)");
+      chrome.storage.local.set({ playlist_num_videos_hover: 1 }, () => {
+        $(PLAY_PLAYLIST_VIDEO).css("background-image", "url(../assets/images/play-video-hover.png)");
+      });
     }
     if ($(this).is(HOW_TO_BG_IMG) || $(this).is(HOW_TO_PLAY_VIDEO)) {
       $(HOW_TO_PLAY_VIDEO).attr("src", "../assets/images/play-video-hover.png");
     }
     if ($(this).is(PLAY_BUTTON_WRAPPER)) {
-      chrome.storage.local.get("playlist_num_videos_hover", function (data) {
+      chrome.storage.local.get("playlist_num_videos_hover", (data) => {
         if (!data.playlist_num_videos_hover) {
           $(PLAY_PLAYLIST_VIDEO).css("background-image", "url(../assets/images/play-video-hover.png)");
         }
@@ -3237,22 +3270,20 @@ $(document).ready(function () {
     }
 
     if ($this.is(IMG_WRAPPER)) {
-      var index_play = $this.index();
-      var not_play_act = $this.children();
+      var index_play = $(IMG_WRAPPER).index(this),
+        not_play_act = $(IMG_WRAPPER + ":nth(" + index_play + ")").children();
 
-      if (!/active\-playlist/.test(not_play_act.attr("class"))) {
-        not_play_act.parent().css("border-color", "#333333");
-        not_play_act.next().next().css("border-color", "#333333");
-        not_play_act.parent().css("cursor", "pointer");
-      }
+      $(not_play_act).parent().css("border-color", "#333333");
+      $(not_play_act).next().next().css("border-color", "#333333");
+      $(not_play_act).parent().css("cursor", "pointer");
     }
 
     if ($this.is(VIDEO_PLAYLIST_NOT_ACTIVE)) {
       var index_vid = $this.index();
 
-      $this.css("border-color", "#333333");
-      $this.children().next().next().css("border-color", "#333333");
-      $this.css("cursor", "pointer");
+      $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").css("border-color", "#333333");
+      $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").children().next().next().css("border-color", "#333333");
+      $(VIDEO_PLAYLIST_NOT_ACTIVE + ":nth(" + index_vid + ")").css("cursor", "pointer");
     }
 
     if ($this.is(ADD_VID_ON_PAGE)) {
@@ -3312,11 +3343,18 @@ $(document).ready(function () {
 
   //SHOW PLAYLIST MESSAGE
   function playlistMessage(src) {
+    console.log('playlistMessage, src', src);
+    console.log('$(PLAYLIST_ACTIVE)', $(PLAYLIST_ACTIVE));
+    console.log('$(PLAYLIST_ACTIVE).next()', $(PLAYLIST_ACTIVE).next());
+    console.log('$(PLAYLIST_ACTIVE).next().css("display")', $(PLAYLIST_ACTIVE).next().css("display"));
+    console.log('$(PLAYLIST_ACTIVE).next().css("display") !== "block"', $(PLAYLIST_ACTIVE).next().css("display") !== "block");
+
     if ($(PLAYLIST_ACTIVE).next().css("display") !== "block") {
-      $(PLAYLIST_ACTIVE).next().next().fadeOut("fast");
+      $(PLAYLIST_ACTIVE).fadeOut("fast");
+      $(PLAYLIST_ACTIVE).fadeOut("fast").delay(2300).fadeIn("fast");
+      $(PLAYLIST_ACTIVE).next().next().fadeOut("fast").delay(2300).fadeIn("fast");
+      $(PLAYLIST_ACTIVE).next().fadeIn("fast").delay(2300).fadeOut("fast");
       $(PLAYLIST_ACTIVE).next().css("background-image", "url(../assets/images/" + src + ".png)");
-      $(PLAYLIST_ACTIVE).next().next().fadeOut("normal").delay(2300).fadeIn("normal");
-      $(PLAYLIST_ACTIVE).next().fadeIn("normal").delay(2000).fadeOut("normal");
     }
   }
 
@@ -3371,7 +3409,7 @@ $(document).ready(function () {
 
   // NEW USER WELCOME POPUP
   function welcomeMsg() {
-    chrome.storage.local.get(['playlist', 'welcome_box'], function (data) {
+    chrome.storage.local.get(['playlist', 'welcome_box'], (data) => {
       if (JSON.stringify(data.playlist) === "{}") {
         toggleContent("HIDE");
       }
@@ -3383,7 +3421,7 @@ $(document).ready(function () {
           $(WELCOME_POPUP).fadeIn("slow");
 
           // Update welcome_box in storage to indicate it has been shown
-          chrome.storage.local.set({ 'welcome_box': true });
+          chrome.storage.local.set({ 'welcome_box': 1 });
         }, 50);
       }
     });
@@ -3539,7 +3577,7 @@ $(document).ready(function () {
 
   // Calculate used Chrome storage space
   function getUsedChromeStorageSpace(callback) {
-    chrome.storage.local.getBytesInUse(null, function (bytesInUse) {
+    chrome.storage.local.getBytesInUse(null, (bytesInUse) => {
       let spaceUsedMB = (bytesInUse / (1024 * 1024)).toFixed(2) + " MBs";
       callback(spaceUsedMB);
     });
