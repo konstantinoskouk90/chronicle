@@ -1510,37 +1510,30 @@ document.addEventListener('DOMContentLoaded', async function () {
 $(document).on("click", SCANNED_VIDEO_SELECT, async function () {
   const data = await chrome.storage.local.get('playlist');
 
-  console.log('$(this).text()', $(this).text());
-
   if (!$(this).hasClass("selected") && $(this).parent().css("cursor") !== "not-allowed") {
     $(this).addClass("selected");
     $(this).text("ADDED");
     $(this).css("color", "#bbb999");
+
     cur_add++;
   } else {
     if ($(this).hasClass("selected")) {
       $(this).text("ADD");
       $(this).removeClass("selected");
       $(this).css("color", "#bbb999");
+      
       cur_add--;
     }
   }
 
-  console.log("cur_add", cur_add);
-  console.log($(this).parent().css("cursor") !== "not-allowed");
-
   if ($(this).parent().css("cursor") !== "not-allowed") {
     var tv, obj = data.playlist[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")];
-    
-    console.log("data", data);
-    
+
     if (obj.link !== "") {
       tv = (obj.link).split("video_ids=")[1].split(",").length;
     } else {
       tv = 0;
     }
-    
-    console.log("obj", obj);
     
     var sum = (Number(tv) + cur_add);
     
@@ -1548,11 +1541,7 @@ $(document).on("click", SCANNED_VIDEO_SELECT, async function () {
       sum = "0" + sum;
     }
     
-    console.log("sum", sum);
-    
     $(SCAN_TOTAL_DYNAMIC).html(":&nbsp;" + sum);
-    
-    console.log("$(SCAN_TOTAL_DYNAMIC).html()", $(SCAN_TOTAL_DYNAMIC).html());
     
     //WINDOWS STYLING FIX
     if (/WIN/i.test(navigator.userAgentData.platform || navigator.platform) && parseValue($(SCAN_TOTAL_DYNAMIC).text()) >= 10 && parseValue($(SCAN_TOTAL_DYNAMIC).text()) <= 19) {
@@ -1567,7 +1556,6 @@ $(document).on("click", SCANNED_VIDEO_SELECT, async function () {
 
   //MOUSEENTER SCANNED RESULT
   $(document).on("mouseenter", POPUP_SELECT_WRAPPER, function () {
-
     if ($(this).children().hasClass("selected")) {
       $(this).children().text("REMOVE");
       $(this).css("cursor", "pointer");
