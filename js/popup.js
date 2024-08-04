@@ -1405,7 +1405,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     $(SCAN_NUM_FOUND).text(temp);
     $(SCAN_NUM_TEXT).text("YouTube Videos Found : ");
-    
+
     var s_link = scannedLinks[num];
 
     if (num < cnt) {
@@ -1506,53 +1506,53 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-//SELECT SCANNED RESULT
-$(document).on("click", SCANNED_VIDEO_SELECT, async function () {
-  const data = await chrome.storage.local.get('playlist');
+  //SELECT SCANNED RESULT
+  $(document).on("click", SCANNED_VIDEO_SELECT, async function () {
+    const data = await chrome.storage.local.get('playlist');
 
-  if (!$(this).hasClass("selected") && $(this).parent().css("cursor") !== "not-allowed") {
-    $(this).addClass("selected");
-    $(this).text("ADDED");
-    $(this).css("color", "#bbb999");
-
-    cur_add++;
-  } else {
-    if ($(this).hasClass("selected")) {
-      $(this).text("ADD");
-      $(this).removeClass("selected");
+    if (!$(this).hasClass("selected") && $(this).parent().css("cursor") !== "not-allowed") {
+      $(this).addClass("selected");
+      $(this).text("ADDED");
       $(this).css("color", "#bbb999");
-      
-      cur_add--;
-    }
-  }
 
-  if ($(this).parent().css("cursor") !== "not-allowed") {
-    var tv, obj = data.playlist[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")];
+      cur_add++;
+    } else {
+      if ($(this).hasClass("selected")) {
+        $(this).text("ADD");
+        $(this).removeClass("selected");
+        $(this).css("color", "#bbb999");
 
-    if (obj.link !== "") {
-      tv = (obj.link).split("video_ids=")[1].split(",").length;
-    } else {
-      tv = 0;
+        cur_add--;
+      }
     }
-    
-    var sum = (Number(tv) + cur_add);
-    
-    if (sum >= 0 && sum < 10) {
-      sum = "0" + sum;
+
+    if ($(this).parent().css("cursor") !== "not-allowed") {
+      var tv, obj = data.playlist[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")];
+
+      if (obj.link !== "") {
+        tv = (obj.link).split("video_ids=")[1].split(",").length;
+      } else {
+        tv = 0;
+      }
+
+      var sum = (Number(tv) + cur_add);
+
+      if (sum >= 0 && sum < 10) {
+        sum = "0" + sum;
+      }
+
+      $(SCAN_TOTAL_DYNAMIC).html(":&nbsp;" + sum);
+
+      //WINDOWS STYLING FIX
+      if (/WIN/i.test(navigator.userAgentData.platform || navigator.platform) && parseValue($(SCAN_TOTAL_DYNAMIC).text()) >= 10 && parseValue($(SCAN_TOTAL_DYNAMIC).text()) <= 19) {
+        $(SCAN_TOTAL_TEXT).css("left", "444px");
+        $(SCAN_TOTAL_DYNAMIC).css("left", "522px");
+      } else {
+        $(SCAN_TOTAL_TEXT).css("left", "441px");
+        $(SCAN_TOTAL_DYNAMIC).css("left", "517px");
+      }
     }
-    
-    $(SCAN_TOTAL_DYNAMIC).html(":&nbsp;" + sum);
-    
-    //WINDOWS STYLING FIX
-    if (/WIN/i.test(navigator.userAgentData.platform || navigator.platform) && parseValue($(SCAN_TOTAL_DYNAMIC).text()) >= 10 && parseValue($(SCAN_TOTAL_DYNAMIC).text()) <= 19) {
-      $(SCAN_TOTAL_TEXT).css("left", "444px");
-      $(SCAN_TOTAL_DYNAMIC).css("left", "522px");
-    } else {
-      $(SCAN_TOTAL_TEXT).css("left", "441px");
-      $(SCAN_TOTAL_DYNAMIC).css("left", "517px");
-    }
-  }
-});
+  });
 
   //MOUSEENTER SCANNED RESULT
   $(document).on("mouseenter", POPUP_SELECT_WRAPPER, function () {
@@ -2997,7 +2997,7 @@ $(document).on("click", SCANNED_VIDEO_SELECT, async function () {
 
   $(document).on("change", SELECT_ALL_CHECKBOX, function () {
     const isChecked = $(this).is(":checked");
-  
+
     if (isChecked) {
       selectAllVideos();
       $(SELECT_ALL_STATUS).text("Deselect All");
@@ -3006,55 +3006,55 @@ $(document).on("click", SCANNED_VIDEO_SELECT, async function () {
       $(SELECT_ALL_STATUS).text("Select All");
     }
   });
-  
+
   function selectAllVideos() {
     const videoElements = $(SCANNED_VIDEO_SELECT);
     let index = 0;
     let totalSelected = parseValue($(SCAN_TOTAL_DYNAMIC).text().split(":")[1].trim());
-  
+
     function processNext() {
       if (index < videoElements.length && totalSelected < 50) {
         const $video = $(videoElements[index]);
-  
+
         if ($video.attr("data-class") === "add" &&
-            $video.parent().css("pointer-events") === "auto" &&
-            !$video.hasClass("selected")) {
+          $video.parent().css("pointer-events") === "auto" &&
+          !$video.hasClass("selected")) {
           triggerEvents($video);
           totalSelected++;
         }
-  
+
         index++;
         setTimeout(processNext, 0); // Defer to ensure DOM update
       }
     }
-  
+
     processNext();
   }
-  
+
   function deselectAllVideos() {
     const selectedVideos = $(`${SCANNED_VIDEO_SELECT}.selected`);
     let index = 0;
-  
+
     function processNext() {
       if (index < selectedVideos.length) {
         const $video = $(selectedVideos[index]);
-  
+
         if ($video.attr("data-class") === "add") {
           triggerEvents($video);
         }
-  
+
         index++;
         setTimeout(processNext, 0); // Defer to ensure DOM update
       }
     }
-  
+
     processNext();
   }
 
   function triggerEvents($element) {
     $element.trigger("mouseover").trigger("click").trigger("mouseleave");
   }
-  
+
   $(document).on("click", WELCOME_HOW_TO_BUTTON + "," + WELCOME_CREATE_BUTTON + "," + CLOSE_WELCOME_POPUP + "," + CLOSE_HOW_TO_POPUP + "," + BACK_TO_WELCOME_HOW_TO + "," + BACK_TO_WELCOME_CREATE, async function () {
     if ($(this).is(WELCOME_HOW_TO_BUTTON)) {
       await fadeOutAsync(WELCOME_POPUP, "normal");
@@ -3571,16 +3571,22 @@ $(document).on("click", SCANNED_VIDEO_SELECT, async function () {
   //CALCULATE USED LS SPACE
   async function getUsedLocalStorageSpace() {
     const data = await chrome.storage.local.get();
-
+  
     return Object.keys(data).map(function (key) {
-      return data[key].length / 1000000 + " MBs";
+      const item = data[key];
+      // Convert the item to a string and measure its length in bytes
+      const itemSize = new Blob([JSON.stringify(item)]).size;
+      // Convert bytes to megabytes
+      return itemSize / 1000000; // MB
     }).reduce(function (a, b) {
       return a + b;
-    });
+    }, 0); // Initial value for reduce is 0
   }
-
-  var lsSpace = await getUsedLocalStorageSpace();
-
+  
+  getUsedLocalStorageSpace().then(function(lsSpace) {
+    console.log(lsSpace + " MBs");
+  });
+  
   function fadeOutAsync(element, speed) {
     return new Promise((resolve, reject) => {
       $(element).fadeOut(speed, function () {
@@ -3589,5 +3595,5 @@ $(document).on("click", SCANNED_VIDEO_SELECT, async function () {
     });
   }
 
-  //console.log(lsSpace);
+  console.log(lsSpace);
 });
