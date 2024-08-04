@@ -159,7 +159,7 @@ const chromeExtension = {
 
             chrome.storage.local.set({ 'playlist': !objKeys.length ? objConstr : objStored }, function () {
                 console.log('action', action);
-                
+
                 // Send message based on action
                 switch (action) {
                     case "ADD_VIDEO":
@@ -197,12 +197,8 @@ const chromeExtension = {
         const { playlist_name, playlist_action, playlist_add_vid_by_url } = caller;
 
         chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-            console.log('tabs', tabs);
-
             const tab = tabs[0];
             const tabsURL = tab.url;
-
-            console.log('queryResult', tab);
 
             if (playlist_action === "ADD_VIDEO" &&
                 (/\/\/www\.youtube\.com\/watch.*v\=/.test(tabsURL) && playlist_add_vid_by_url === undefined) ||
@@ -257,7 +253,6 @@ const chromeExtension = {
     },
     // Function to create a new playlist
     createPlaylist: async (caller) => {
-        console.log('caller', caller);
         const { playlist_name, playlist_description, playlist_image, playlist, playlist_plays, thumbnails, playlist_action } = caller;
         const date_modified = new Date();
         const extract_ids = playlist || "";

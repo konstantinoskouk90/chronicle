@@ -205,6 +205,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     $(NEW_PLAYLIST).css("line-height", "39px");
   }
 
+  // CLEAR SESSION STORAGE
+  await Promise.all([
+    await chrome.storage.local.remove('video'),
+    await chrome.storage.local.remove('playlist_details'),
+    await chrome.storage.local.remove('video_details'),
+    await chrome.storage.local.remove('playlist_preview_play'),
+    await chrome.storage.local.remove('playlist_num_videos_hover'),
+  ]);
+
   const data = await chrome.storage.local.get('playlist');
 
   //INITIALIZE PLAYLIST LS ITEM
@@ -1900,7 +1909,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   //DELETE PLAYLIST
-  $(DELETE_DELETE).click(function () {
+  $(DELETE_DELETE).click(async function () {
     if (navigator.onLine) {
 
       if ($(this).css("cursor") !== "wait" && $(DELETE_TITLE).text() === "Delete Playlist") {
@@ -1910,50 +1919,50 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         $(PLAYLIST_ACTIVE).next().next().fadeOut("normal");
 
-        $(PLAYLIST_ACTIVE).fadeOut("normal", async function () {
-          const data = await chrome.storage.local.get('playlist');
+        await fadeOutAsync(PLAYLIST_ACTIVE, "normal");
 
-          // var pg, temp = JSON.parse(localStorage.playlist);
-          var pg, temp = data.playlist;
+        const data = await chrome.storage.local.get('playlist');
 
-          delete temp[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")];
-          // localStorage.setItem("playlist", JSON.stringify(temp));
-          await chrome.storage.local.set({ 'playlist': temp });
+        // var pg, temp = JSON.parse(localStorage.playlist);
+        var pg, temp = data.playlist;
 
-          for (var i = 0; i < $(PLAYLIST).length; i++) {
-            if ($(".playlist-favorite:nth(" + i + ")").hasClass("active-playlist")) {
-              if (i !== ($(PLAYLIST).length - 1)) {
-                storeNum = i;
-              } else if (i > 0) {
-                storeNum = i - 1;
-              } else {
-                storeNum = undefined;
-              }
+        delete temp[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")];
+        // localStorage.setItem("playlist", JSON.stringify(temp));
+        await chrome.storage.local.set({ 'playlist': temp });
+
+        for (var i = 0; i < $(PLAYLIST).length; i++) {
+          if ($(".playlist-favorite:nth(" + i + ")").hasClass("active-playlist")) {
+            if (i !== ($(PLAYLIST).length - 1)) {
+              storeNum = i;
+            } else if (i > 0) {
+              storeNum = i - 1;
+            } else {
+              storeNum = undefined;
             }
           }
-          if (!!$(SEARCH_PLAY).val().length) {
-            $(SEARCH_PLAY).trigger("keyup", [pg, "DELETE"]);
-          } else {
-            if (parseValue($(PAGE_CURRENT).text()) >= parseValue($(PAGE_TOTAL).text())) {
-              const data = await chrome.storage.local.get('playlist');
+        }
+        if (!!$(SEARCH_PLAY).val().length) {
+          $(SEARCH_PLAY).trigger("keyup", [pg, "DELETE"]);
+        } else {
+          if (parseValue($(PAGE_CURRENT).text()) >= parseValue($(PAGE_TOTAL).text())) {
+            const data = await chrome.storage.local.get('playlist');
 
-              // var keysLen = Object.keys(JSON.parse(localStorage.playlist)).length;
-              var keysLen = Object.keys(data.playlist).length;
+            // var keysLen = Object.keys(JSON.parse(localStorage.playlist)).length;
+            var keysLen = Object.keys(data.playlist).length;
 
-              if (keysLen > 11 && keysLen < 193 && keysLen % 12 === 0) {
-                pg = parseValue($(PAGE_CURRENT).text()) - 1;
-              } else {
-                pg = parseValue($(PAGE_CURRENT).text());
-              }
+            if (keysLen > 11 && keysLen < 193 && keysLen % 12 === 0) {
+              pg = parseValue($(PAGE_CURRENT).text()) - 1;
             } else {
               pg = parseValue($(PAGE_CURRENT).text());
             }
-
-            await createPlaylist("UPDATE", pg);
+          } else {
+            pg = parseValue($(PAGE_CURRENT).text());
           }
-          $(self).css("cursor", "pointer");
-          trackEvent("event", "Playlist", "delete", "Delete", 1);
-        });
+
+          await createPlaylist("UPDATE", pg);
+        }
+        $(self).css("cursor", "pointer");
+        trackEvent("event", "Playlist", "delete", "Delete", 1);
       }
     } else {
       playlistMessage("offline_state");
@@ -2003,7 +2012,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
           $(ACTIVE_PLAYLIST_VIDEO).children().next().next().fadeOut("normal");
 
-          $(ACTIVE_PLAYLIST_VIDEO).fadeOut("normal", async function () {
+          $(ACTIVE_PLAYLIST_VIDEO).fadeOut("normal", function () {
 
             arr_id.splice(index, 1);
             send.playlist = arr_id.join(",");
@@ -3621,6 +3630,14 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   var lsSpace = await getUsedLocalStorageSpace();
+
+  function fadeOutAsync(element, speed) {
+    return new Promise((resolve, reject) => {
+      $(element).fadeOut(speed, function () {
+        resolve();
+      });
+    });
+  }
 
   //console.log(lsSpace);
 });
