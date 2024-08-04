@@ -158,6 +158,8 @@ const chromeExtension = {
             console.log('objStored', objStored);
 
             chrome.storage.local.set({ 'playlist': !objKeys.length ? objConstr : objStored }, function () {
+                console.log('action', action);
+                
                 // Send message based on action
                 switch (action) {
                     case "ADD_VIDEO":
