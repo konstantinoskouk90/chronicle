@@ -3,27 +3,28 @@ chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => 
 
     try {
         if (message.from === "content") {
+            await chrome.storage.local.remove('playlist_scanned');
+
             if (message.found) {
-                await chrome.storage.local.set({ 'playlist_scanned': message.send }, function () {
-                    chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
-                });
-            } else {
-                await chrome.storage.local.remove('playlist_scanned', function () {
-                    chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
-                });
+                await chrome.storage.local.set({ 'playlist_scanned': message.send });
             }
+
+            chrome.runtime.sendMessage({ data: "VIDEOS_SCANNED" });
         }
 
         if (message.action) {
             switch (message.action) {
                 case "activeTab":
                     await chromeExtension.activeTab(message.send);
+
                     break;
                 case "updatePlaylist":
-                    await chromeExtension.updatePlaylist(message.send);
+                    chromeExtension.updatePlaylist(message.send);
+
                     break;
                 case "createPlaylist":
                     await chromeExtension.createPlaylist(message.send);
+
                     break;
                 default:
                     console.log('Unknown action:', message.action);
@@ -36,10 +37,7 @@ chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => 
 
 const chromeExtension = {
     // Function to activate the extension in the active tab
-    activeTab: async (caller, callback) => {
-        console.log('caller', caller);
-        console.log('callback', callback);
-
+    activeTab: async (_caller, callback) => {
         chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
             var tab = tabs[0];
 
@@ -106,8 +104,7 @@ const chromeExtension = {
 
                                 chrome.runtime.sendMessage({ from: "content", found: ytIDs.length > 0, send: ytIDs });
                             }
-                        }, function (res) {
-                            console.log('res', res);
+                        }, function (_res) {
                             console.log('Script executed successfully');
                         });
                     } catch (error) {
@@ -127,7 +124,7 @@ const chromeExtension = {
     constrObj: (title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, action) => {
         chrome.storage.local.get('playlist', function (data) {
             var objConstr = {},
-                objStored = data.playlist || {},
+                objStored = data.playlist,
                 objKeys = Object.keys(objStored);
 
             if (!objKeys.length) {
@@ -154,13 +151,7 @@ const chromeExtension = {
                 objStored[title].link = link;
             }
 
-            console.log('objConstr', objConstr);
-            console.log('objStored', objStored);
-
             chrome.storage.local.set({ 'playlist': !objKeys.length ? objConstr : objStored }, function () {
-                console.log('action', action);
-
-                // Send message based on action
                 switch (action) {
                     case "ADD_VIDEO":
                         chrome.runtime.sendMessage({ data: "ADDED_VIDEO" });
@@ -214,13 +205,14 @@ const chromeExtension = {
                         undefined;
                 }
 
-                const playlistData = await new Promise((resolve) => {
-                    chrome.storage.local.get('playlist', resolve);
-                });
+                const playlistData = await chrome.storage.local.get('playlist');
 
-                const storedPlaylist = playlistData.playlist || {};
-                const all_IDs = storedPlaylist[playlist_name]?.link || "";
-                const numVids = storedPlaylist[playlist_name]?.videos || 0;
+                const storedPlaylists = playlistData.playlist;
+
+                const storedPlaylist = storedPlaylists[playlist_name];
+
+                const all_IDs = storedPlaylist.link || "";
+                const numVids = storedPlaylist.videos || 0;
 
                 if (!all_IDs.length) {
                     if (video_id !== undefined) {
@@ -230,8 +222,10 @@ const chromeExtension = {
                 } else {
                     if (video_id !== undefined) {
                         const prod = new RegExp(video_id);
+
                         if (!prod.test(all_IDs) && numVids < 50) {
                             caller.playlist = all_IDs.match(/video_ids=(.*)/)[1] + "," + video_id;
+
                             await chromeExtension.createPlaylist(caller);
                         } else if (numVids === 50) {
                             chrome.runtime.sendMessage({ data: "MAX_VIDEO" });
@@ -252,42 +246,62 @@ const chromeExtension = {
         });
     },
     // Function to create a new playlist
-    createPlaylist: async (caller) => {
-        const { playlist_name, playlist_description, playlist_image, playlist, playlist_plays, thumbnails, playlist_action } = caller;
-        const date_modified = new Date();
-        const extract_ids = playlist || "";
-        const count_plays = playlist_plays || "0";
-        const lastAddedLink = extract_ids ? `https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${extract_ids.split(",")[extract_ids.split(",").length - 1]}`)}` : "";
+    createPlaylist: async function (caller) {
+        var title, description, img_src, link, num_vids, thumbnails, count_plays, extract_ids;
 
-        if (extract_ids) {
-            let link = `https://www.youtube.com/watch_videos?&title=${playlist_name}&video_ids=${extract_ids}`;
-            let status = "enabled";
-            let num_vids = extract_ids.split(",").length;
-
-            try {
-                // Fetch last added video's title
-                const response = await fetch(lastAddedLink);
-                if (response.ok) {
-                    const data = await response.json();
-                    let lastAdded = data.title || "";
-
-                    chromeExtension.constrObj(playlist_name, date_modified, playlist_description, status, lastAdded, count_plays, num_vids, thumbnails, playlist_image, link, playlist_action);
-                } else {
-                    throw new Error("Failed to fetch last added video");
-                }
-            } catch (error) {
-                console.error("Error fetching last added video:", error);
-
-                if (caller.playlist_action === "ADD_VIDEO") {
-                    chrome.runtime.sendMessage({ data: "VIDEO_UNAVAILABLE" });
-                }
-
-                if (caller.playlist_action === "PLAY_PLAYLIST") {
-                    chromeExtension.constrObj(playlist_name, date_modified, playlist_description, status, "", count_plays, num_vids, thumbnails, playlist_image, link, playlist_action);
-                }
-            }
+        if (caller.playlist !== undefined) {
+            extract_ids = caller.playlist;
         } else {
-            chromeExtension.constrObj(playlist_name, date_modified, playlist_description, "disabled", "", 0, 0, "", playlist_image || "", "", playlist_action);
+            extract_ids = "";
+        }
+
+        if (caller.playlist_plays !== undefined) {
+            count_plays = caller.playlist_plays;
+        } else {
+            count_plays = "0";
+        }
+
+        if (caller.thumbnails !== undefined) {
+            thumbnails = caller.thumbnails;
+        } else {
+            thumbnails = "";
+        }
+
+        title = caller.playlist_name;
+        description = caller.playlist_description;
+        img_src = caller.playlist_image;
+        var date_modified = new Date();
+
+        if (!!extract_ids.length) {
+            link = "https://www.youtube.com/watch_videos?&title=" + title + "&video_ids=" + extract_ids;
+            var lastAddedLink = "https://www.youtube.com/oembed?url=" + encodeURIComponent("https://www.youtube.com/watch?v=" + extract_ids.split(",")[(extract_ids.split(",").length) - 1]);
+            var status = "enabled";
+            num_vids = extract_ids.split(",").length;
+
+            await fetch(lastAddedLink)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.title !== undefined) {
+                        chromeExtension.constrObj(title, date_modified, description, status, encodeURIComponent(data.title), count_plays, num_vids, thumbnails, img_src, link, caller.playlist_action);
+                    } else {
+                        if (caller.playlist_action === "ADD_VIDEO") {
+                            chrome.runtime.sendMessage({ data: "VIDEO_UNAVAILABLE" });
+                        }
+                        if (caller.playlist_action === "PLAY_PLAYLIST") {
+                            chromeExtension.constrObj(title, date_modified, description, status, encodeURIComponent(data.title), count_plays, num_vids, thumbnails, img_src, link, caller.playlist_action);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching last added video data:', error);
+                });
+        } else {
+            link = "";
+            status = "disabled";
+            num_vids = 0;
+            thumbnails = "";
+            var lastAdded = "";
+            this.constrObj(title, date_modified, description, status, lastAdded, count_plays, num_vids, thumbnails, img_src, link, caller.playlist_action);
         }
     },
 };

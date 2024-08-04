@@ -788,7 +788,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     var img;
 
-    if (thb && thb !== "") {
+    if (thb !== "") {
       var s = thb.split(",")[vp - 1];
       img = "https://img.youtube.com/vi/" + lk.split("watch?v=")[1] + "/" + s + ".jpg";
     } else {
@@ -941,7 +941,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         console.log('thb', thb);
 
-        if (thb && thb !== "") {
+        if (thb !== "") {
           var temp = thb.split(","),
             tempLen = temp.length;
 
@@ -1019,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           send.playlist_plays = inc_two + "|" + "1M+";
         }
 
-        if (thb && thb !== "") {
+        if (thb !== "") {
           send.thumbnails = thb;
         }
       }
@@ -1643,7 +1643,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           ntb += ",mqdefault";
         }
 
-        if (thb && thb !== "") {
+        if (thb !== "") {
           send.thumbnails = thb + ntb;
         } else {
           send.thumbnails = ntb.replace(/,/, "");
@@ -1970,7 +1970,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           arr_id.splice(index, 1);
           send.playlist = arr_id.join(",");
 
-          if (thb && thb !== "") {
+          if (thb !== "") {
             var temp = thb.split(",");
             temp.splice(index, 1);
             send.thumbnails = temp.join(",");
