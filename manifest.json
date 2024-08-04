@@ -31,6 +31,6 @@
     "default_title": "Chronicle"
   },
   "background": {
-    "service_worker": "js/background.js"
+    "service_worker": "js/service-worker.js"
   }
 }
