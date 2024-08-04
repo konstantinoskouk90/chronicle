@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     CHARACTER_NAME_LENGTH = "#character-name-length",
     CLOSE_HOW_TO_POPUP = ".header-preview-popup-video .popup-video-close",
     CLOSE_WELCOME_POPUP = ".welcome-popup .header-welcome .popup-video-close",
-    CONTROLS_WRAPPER = ".controls-wrapper",
     COPIED_LINK = "#copied-link",
     DELETE_APP_POPUP = ".delete-app-popup",
     DELETE_CANCEL = "#delete-cancel",
@@ -37,8 +36,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     DELETE_PLAYLIST = "#delete-playlists",
     DELETE_TITLE = "#delete-title",
     DELETE_VIDEO = "#delete-videos",
-    DELETE_WRAPPER = ".delete-wrapper",
-    DESCRIPTION_DETAILS_WRAPPER = ".description-details-wrapper",
     DESCRIPTION_POPUP_TITLE = ".main-popup-description",
     DESCRIPTION_VIDEOS = "#playlist-description",
     DETAILS_WRAPPER = ".details-wrapper",
@@ -99,7 +96,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     POSITION_ACTIVE = "#position-active",
     POSITION_PLAY = ".pos-play",
     POSITION_TOTAL = "#position-total",
-    POSITION_WRAPPER = ".position-wrapper",
     PREVIEW_PLAYLIST_TEXT = "#preview-playlist-text",
     PREVIEW_PLAYLIST_WRAPPER = ".preview-playlist-wrapper",
     PREVIEW_POPUP_HOW_TO = ".preview-popup-how-to",
@@ -142,10 +138,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     THUMB_THREE = "#thumb-three",
     THUMB_TWO = "#thumb-two",
     TITLE_APP_POPUP = "#title-app-popup",
-    TITLE_DETAILS_WRAPPER = ".title-details-wrapper",
     TITLE_VIDEOS = "#playlist-name",
     UP_LIST = "#up-list",
-    VIDEO_DETAILS_WRAPPER = ".video-details-wrapper",
     VIDEO_IMAGE_TITLE = ".video-image-title",
     VIDEO_PLAYER = ".video-player",
     VIDEO_PLAYLIST = ".video-playlist-video",
@@ -216,11 +210,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   const data = await chrome.storage.local.get('playlist');
 
-  //INITIALIZE PLAYLIST LS ITEM
-  // if (!localStorage.playlist) {
-  //   localStorage.setItem("playlist", "{}");
-  // }
-
   if (!data.playlist) {
     await chrome.storage.local.set({ 'playlist': {} });
   }
@@ -235,10 +224,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   async function createPlaylist(msg, pg) {
     added = 0;
     temp = 0;
-
-    // var count = -1,
-    //   objParse = JSON.parse(localStorage.playlist),
-    //   playlists = Object.keys(JSON.parse(localStorage.playlist));
 
     const data = await chrome.storage.local.get('playlist');
 
@@ -311,9 +296,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     var keys = [],
       count = -1,
       searchField = new RegExp($(SEARCH_PLAY).val(), "i");
-
-    // var objParse = JSON.parse(localStorage.playlist),
-    //   playlists = Object.keys(JSON.parse(localStorage.playlist));
 
     const data = await chrome.storage.local.get('playlist');
 
@@ -430,9 +412,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     vid_added = 0;
     vid_temp = 0;
 
-    // var objParse = JSON.parse(sessionStorage.video),
-    //   videos = Object.keys(objParse);
-
     const data = await chrome.storage.local.get('video');
 
     var objParse = data.video,
@@ -533,7 +512,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       var hid = $(sel).attr("hidden_title"),
         ttl = decodeURIComponent(hid.replace(/\+/g, " ")),
-        // obj = JSON.parse(localStorage.playlist)[hid],
         obj = dataPlaylist.playlist[hid],
         dsc = decodeURIComponent(obj.description),
         dmo = obj.date_modified,
@@ -608,7 +586,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       const data = await chrome.storage.local.get('playlist');
 
-      // if (Object.keys(JSON.parse(localStorage.playlist)).length === 1) {
       if (Object.keys(data.playlist).length === 1) {
         toggleContent("FADE_IN");
       }
@@ -625,7 +602,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     } else {
       const data = await chrome.storage.local.get('playlist');
 
-      // if (!Object.keys(JSON.parse(localStorage.playlist)).length) {
       if (!Object.keys(data.playlist).length) {
 
         if ($(SEARCH_PLAY).css("display") === "block") {
@@ -637,10 +613,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         $(NEW_PLAYLIST_LOGO).addClass("animation-alert-image animated infinite");
         $(SEARCH_PLAY).val("");
       } else {
-        // if (localStorage.playlist === "{}") {
         const data = await chrome.storage.local.get('playlist');
 
-        if (JSON.stringify(data.playlist)) {
+        if (JSON.stringify(data.playlist) === "{}") {
           $(RESULTS_HEADER).css("background-image", "url(../assets/images/background-logo.png)");
         } else {
           $(RESULTS_HEADER).css("background-image", "url(../assets/images/no-results.png)");
@@ -658,6 +633,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         $(DELETE_PLAYLIST).css("color", "#C0C0C0");
       }
     }
+
     resetArrowStyling($(PAGE_CURRENT));
   }
 
@@ -677,7 +653,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       const data = await chrome.storage.local.get('playlist');
 
-      // var n, data_tb = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")].thumbnails,
       var n, data_tb = data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")].thumbnails,
         data_ps = obj.video_position,
         data_id = hid.split("watch?v=")[1];
@@ -800,7 +775,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const data = await chrome.storage.local.get('playlist');
 
-    // var obj = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")],
     var obj = data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")],
       thb = obj.thumbnails,
       vid = Number(obj.videos);
@@ -941,7 +915,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       var pla, send = {},
         self = this,
         pg = parseValue($(PAGE_CURRENT).text()),
-        // obj = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")],
         obj = data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")],
         thb = obj.thumbnails,
         lnk = obj.link;
@@ -1302,15 +1275,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
           var idlst;
 
-          // if (localStorage.playlist_scanned !== undefined) {
-          //   idlst = (localStorage.playlist_scanned).split(",");
-          // } else {
-          //   idlst = "";
-          // }
-
           const localStoragePlaylistScanned = await chrome.storage.local.get('playlist_scanned');
-
-          console.log('localStoragePlaylistScanned', localStoragePlaylistScanned);
 
           if (localStoragePlaylistScanned.playlist_scanned !== undefined && localStoragePlaylistScanned.playlist_scanned.length > 0) {
             idlst = localStoragePlaylistScanned.playlist_scanned;
@@ -1331,8 +1296,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             $(SCAN_NUM_FOUND).css("left", "375px");
             $(SCAN_TOTAL_TEXT).css("left", "441px");
             $(SCAN_TOTAL_DYNAMIC).css("left", "517px");
-
-            console.log('scannedLinks', scannedLinks);
 
             await scanAPI(scannedLinks.length, 0);
           } else {
@@ -1369,7 +1332,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   //RESET SCANNED DATA
   async function resetScannedData() {
-    // delete localStorage.playlist_scanned;
     await chrome.storage.local.remove('playlist_scanned');
 
     scan_active_title = [];
@@ -1420,7 +1382,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   async function scanAPI(cnt, num) {
     const data = await chrome.storage.local.get('playlist');
 
-    // var tv, obj = JSON.parse(localStorage.playlist)[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")],
     var tv, obj = data.playlist[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")],
       lnk = obj.link;
 
@@ -1506,7 +1467,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     var len,
       state = "add",
-      // plIDs = JSON.parse(localStorage.playlist)[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")].link,
       plIDs = data.playlist[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")].link,
       ytID = link.match(/watch\?v\=([^&]+)/)[1],
       savedState = [];
@@ -1569,7 +1529,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     if ($(this).parent().css("cursor") !== "not-allowed") {
       const data = await chrome.storage.local.get('playlist');
-      // var tv, obj = JSON.parse(localStorage.playlist)[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")];
       var tv, obj = data.playlist[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")];
 
       if (obj.link && obj.link !== "") {
@@ -1635,7 +1594,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   //UPDATE SCAN POPUP
   $(document).on("click", SCAN_UPDATE, async function () {
     const data = await chrome.storage.local.get('playlist');
-    // var tv, active_obj = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")];
     var tv, active_obj = data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")];
 
     if (active_obj.link !== "") {
@@ -1650,7 +1608,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       var pla, send = {},
         self = this,
         pg = parseValue($(PAGE_CURRENT).text()),
-        // obj = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")],
         obj = data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")],
         ttl = $(PLAYLIST_ACTIVE).attr("hidden_title"),
         dsc = obj.description,
@@ -1781,7 +1738,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       const data = await chrome.storage.local.get('playlist');
 
-      // var lst, lnk = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")].link;
       var lst, lnk = await data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")].link;
 
       $(this).css("cursor", "wait");
@@ -1923,11 +1879,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const data = await chrome.storage.local.get('playlist');
 
-        // var pg, temp = JSON.parse(localStorage.playlist);
         var pg, temp = data.playlist;
 
         delete temp[encodeURIComponent($(TITLE_VIDEOS).text()).replace(/%20/g, "+")];
-        // localStorage.setItem("playlist", JSON.stringify(temp));
+
         await chrome.storage.local.set({ 'playlist': temp });
 
         for (var i = 0; i < $(PLAYLIST).length; i++) {
@@ -1947,7 +1902,6 @@ document.addEventListener('DOMContentLoaded', async function () {
           if (parseValue($(PAGE_CURRENT).text()) >= parseValue($(PAGE_TOTAL).text())) {
             const data = await chrome.storage.local.get('playlist');
 
-            // var keysLen = Object.keys(JSON.parse(localStorage.playlist)).length;
             var keysLen = Object.keys(data.playlist).length;
 
             if (keysLen > 11 && keysLen < 193 && keysLen % 12 === 0) {
@@ -1980,7 +1934,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         var self = this,
           send = {},
           pg = parseValue($(PAGE_CURRENT).text()),
-          // obj = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")],
           obj = data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")],
           dsc = obj.description,
           img = obj.image,
@@ -2081,7 +2034,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       var sortAll, send = {},
         act = $(PLAYLIST_ACTIVE).attr("hidden_title"),
         storeObj = data.playlist,
-        // storeObj = JSON.parse(localStorage.playlist),
         objKeys = Object.keys(storeObj),
         cur_pos;
 
@@ -2129,11 +2081,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if ($(MENU_BACK_IMG).css("display") === "block" && storageLink && storageLink !== "" && (Number($(ACTIVE_ELEMENT).attr("position")) + 1) === data.video[$(ACTIVE_PLAYLIST_VIDEO).attr("href")].video_position) {
           send.playlist = storageActive.link.match(/video_ids=(.*)/)[1];
         } else if ($(MENU_BACK_IMG).css("display") === "block" && storageLink && storageLink !== "" && (Number($(ACTIVE_ELEMENT).attr("position")) + 1) !== data.video[$(ACTIVE_PLAYLIST_VIDEO).attr("href")].video_position) {
-
           const data = await chrome.storage.local.get('playlist');
-
-          // var obj = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")],
-          //   lnk = obj.link;
 
           var obj = data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")],
             lnk = obj.link;
@@ -2255,7 +2203,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
           const data = await chrome.storage.local.get('playlist');
 
-          // var temp = JSON.parse(localStorage.playlist);
           var temp = data.playlist;
 
           if (!temp[send.playlist_name]) {
@@ -2274,9 +2221,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       //CONDITIONAL CHECKS
       const dataPlaylist = await chrome.storage.local.get('playlist');
-
-      // var permit, active = $(PLAYLIST_ACTIVE).attr("hidden_title"),
-      //   playlistNum = Object.keys(JSON.parse(localStorage.playlist)).length;
 
       var permit, active = $(PLAYLIST_ACTIVE).attr("hidden_title"),
         playlistNum = Object.keys(dataPlaylist.playlist).length;
@@ -2377,7 +2321,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             if ((message.data === "CREATED_PLAYLIST" || message.data === "SAVED_PLAYLIST") && !$(SEARCH_PLAY).val().length) {
               const data = await chrome.storage.local.get('playlist');
-              // sortAll = Object.keys(JSON.parse(localStorage.playlist)).sort();
               sortAll = Object.keys(data.playlist).sort();
 
               console.log('CREATED_PLAYLIST, data', data);
@@ -2511,7 +2454,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (($(this).is(EDIT_PLAYLIST_WRAPPER)) && $(EDIT_PLAYLIST_TEXT).is(":visible")) {
       const data = await chrome.storage.local.get('playlist');
 
-      // var obj = JSON.parse(localStorage.playlist)[$(PLAYLIST_ACTIVE).attr("hidden_title")];
       var obj = data.playlist[$(PLAYLIST_ACTIVE).attr("hidden_title")];
 
       img = obj.image;
@@ -3050,7 +2992,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Do not show the welcome popup again
   $(document).on("change", WELCOME_CHECKBOX, async function () {
     if ($(this).is(":checked")) {
-      // localStorage.setItem("welcome_box", 1);
       await chrome.storage.local.set({ 'welcome_box': 1 });
     } else {
       await chrome.storage.local.remove('welcome_box');
@@ -3072,6 +3013,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           }
         }
       }
+
       $(SELECT_ALL_STATUS).text("Deselect All");
     } else {
       for (var i = 0; i < $(SCANNED_VIDEO_SELECT).length; i++) {
@@ -3081,6 +3023,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           $(SCANNED_VIDEO_SELECT + ":nth(" + i + ")").trigger("mouseleave");
         }
       }
+
       $(SELECT_ALL_STATUS).text("Select All");
     }
   });
@@ -3436,17 +3379,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   //NEW USER WELCOME POPUP
   async function welcomeMsg() {
-    // if (localStorage.playlist === "{}") {
-    //   toggleContent("HIDE");
-    // }
-    // if (!localStorage.welcome_box && localStorage.playlist === "{}") {
-    //   setTimeout(function () {
-    //     $(APP_POPUP).hide();
-    //     $(OVERLAY).fadeIn("slow");
-    //     $(WELCOME_POPUP).fadeIn("slow");
-    //   }, 50);
-    // }
-
     const data = await chrome.storage.local.get(['playlist', 'welcome_box']);
 
     if (JSON.stringify(data.playlist) === "{}") {
@@ -3610,13 +3542,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   trackVPage("playlist");
 
   //CALCULATE USED LS SPACE
-  // function getUsedLocalStorageSpace() {
-  //   return Object.keys(window.localStorage).map(function (key) {
-  //     return localStorage[key].length / 1000000 + " MBs";
-  //   }).reduce(function (a, b) {
-  //     return a + b;
-  //   });
-  // }
   async function getUsedLocalStorageSpace() {
     const data = await chrome.storage.local.get();
 
