@@ -1247,13 +1247,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   //SCAN PAGE
   $(document).on("click", SCAN_PAGE_WRAPPER, async function () {
-
     $(SELECT_ALL_CHECKBOX_WRAPPER).attr("title", "");
     $(SELECT_ALL_CHECKBOX).prop({ checked: false, disabled: "disabled" });
     $(SELECT_ALL_STATUS).text("Select All");
 
     if (navigator.onLine && $(this).css("cursor") !== "wait") {
-
       var self = this;
 
       $(self).css("cursor", "wait");
@@ -1407,9 +1405,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     $(SCAN_NUM_FOUND).text(temp);
     $(SCAN_NUM_TEXT).text("YouTube Videos Found : ");
-
-    var txt = $(SCAN_NUM_TEXT).text();
-
+    
     var s_link = scannedLinks[num];
 
     if (num < cnt) {
