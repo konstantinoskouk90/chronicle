@@ -3583,9 +3583,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     }, 0); // Initial value for reduce is 0
   }
   
-  getUsedLocalStorageSpace().then(function(lsSpace) {
-    console.log(lsSpace + " MBs");
-  });
+  const lsSpace = await getUsedLocalStorageSpace();
+
+  console.log(lsSpace + " MBs");
   
   function fadeOutAsync(element, speed) {
     return new Promise((resolve, reject) => {
@@ -3594,6 +3594,4 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
     });
   }
-
-  console.log(lsSpace);
 });
