@@ -1627,8 +1627,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   });
 
   //CANCEL SCAN POPUP
-  $(SCAN_CANCEL).click(function () {
-    hideScanner();
+  $(SCAN_CANCEL).click(async function () {
+    await hideScanner();
     cur_add = 0;
   });
 
@@ -1719,7 +1719,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             trackEvent("event", "Playlist", "add", "Scanned Page", len);
 
             if (!!$(SEARCH_PLAY).val().length) {
-              hideScanner();
+              await hideScanner();
               $(self).css("cursor", "pointer");
               cur_add = 0;
             }
@@ -1737,9 +1737,9 @@ document.addEventListener('DOMContentLoaded', async function () {
               }
             }, 100);
 
-            setTimeout(function () {
+            setTimeout(async function () {
               if (!$(SEARCH_PLAY).val().length) {
-                hideScanner();
+                await hideScanner();
                 $(self).css("cursor", "pointer");
                 cur_add = 0;
               }
@@ -1747,7 +1747,7 @@ document.addEventListener('DOMContentLoaded', async function () {
           }
         });
       } else {
-        hideScanner();
+        await hideScanner();
         cur_add = 0;
       }
     } else if (!navigator.onLine) {
@@ -1756,7 +1756,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         $(SCAN_ERROR_MESSAGE).fadeIn("normal").delay(3000).fadeOut("normal");
       }
     } else if (tv === 50) {
-      hideScanner();
+      await hideScanner();
       cur_add = 0;
     }
   });
@@ -2012,55 +2012,54 @@ document.addEventListener('DOMContentLoaded', async function () {
 
           $(ACTIVE_PLAYLIST_VIDEO).children().next().next().fadeOut("normal");
 
-          $(ACTIVE_PLAYLIST_VIDEO).fadeOut("normal", function () {
+          await fadeOutAsync(ACTIVE_PLAYLIST_VIDEO, "normal");
 
-            arr_id.splice(index, 1);
-            send.playlist = arr_id.join(",");
+          arr_id.splice(index, 1);
+          send.playlist = arr_id.join(",");
 
-            if (thb && thb !== "") {
-              var temp = thb.split(",");
-              temp.splice(index, 1);
-              send.thumbnails = temp.join(",");
-            }
+          if (thb && thb !== "") {
+            var temp = thb.split(",");
+            temp.splice(index, 1);
+            send.thumbnails = temp.join(",");
+          }
 
-            chrome.runtime.sendMessage({ action: "createPlaylist", send: send });
+          chrome.runtime.sendMessage({ action: "createPlaylist", send: send });
 
-            chrome.runtime.onMessage.addListener(async function (message, messageSender, sendResponse) {
+          chrome.runtime.onMessage.addListener(async function (message, messageSender, sendResponse) {
 
-              chrome.runtime.onMessage.removeListener(arguments.callee);
+            chrome.runtime.onMessage.removeListener(arguments.callee);
 
-              if (message.data === "DELETED_VIDEO") {
-                const data = await chrome.storage.local.get('video');
+            if (message.data === "DELETED_VIDEO") {
+              const data = await chrome.storage.local.get('video');
 
-                var temp = data.video;
-                delete temp[$(ACTIVE_PLAYLIST_VIDEO).attr("href")];
-                var tempKeys = Object.keys(temp);
+              var temp = data.video;
+              delete temp[$(ACTIVE_PLAYLIST_VIDEO).attr("href")];
+              var tempKeys = Object.keys(temp);
 
-                for (var x = index; x < tempKeys.length; x++) {
-                  temp[tempKeys[x]].video_position = Number(temp[tempKeys[x]].video_position) - 1;
-                }
+              for (var x = index; x < tempKeys.length; x++) {
+                temp[tempKeys[x]].video_position = Number(temp[tempKeys[x]].video_position) - 1;
+              }
 
-                await chrome.storage.local.set({ 'video': temp });
+              await chrome.storage.local.set({ 'video': temp });
 
-                for (var i = 0; i < $(VIDEO_PLAYLIST).length; i++) {
+              for (var i = 0; i < $(VIDEO_PLAYLIST).length; i++) {
 
-                  if ($(VIDEO_PLAYLIST + ":nth(" + i + ")").hasClass("active-playlist-video")) {
+                if ($(VIDEO_PLAYLIST + ":nth(" + i + ")").hasClass("active-playlist-video")) {
 
-                    if (i !== ($(VIDEO_PLAYLIST).length - 1)) {
-                      storeVidNum = i;
-                    } else if (i > 0) {
-                      storeVidNum = i - 1;
-                    } else {
-                      storeVidNum = undefined;
-                    }
+                  if (i !== ($(VIDEO_PLAYLIST).length - 1)) {
+                    storeVidNum = i;
+                  } else if (i > 0) {
+                    storeVidNum = i - 1;
+                  } else {
+                    storeVidNum = undefined;
                   }
                 }
-                $(SEARCH_VID).trigger("keyup", [pg, "DELETE"]);
-                $(self).css("cursor", "pointer");
-
-                trackEvent("event", "Video", "delete", "Delete", 1);
               }
-            });
+              $(SEARCH_VID).trigger("keyup", [pg, "DELETE"]);
+              $(self).css("cursor", "pointer");
+
+              trackEvent("event", "Video", "delete", "Delete", 1);
+            }
           });
         } else {
           $(self).css("cursor", "pointer");
@@ -2882,21 +2881,22 @@ document.addEventListener('DOMContentLoaded', async function () {
   });
 
   //CLOSE POPUP ON BACKGROUND CLICK
-  $(document).on("click", POPUP_BG, function () {
+  $(document).on("click", POPUP_BG, async function () {
     if ($(PREVIEW_POPUP_HOW_TO_WRAPPER).css("display") === "block") {
       $(APP_POPUP + "," + DELETE_APP_POPUP + "," + WELCOME_POPUP).hide();
-      $(OVERLAY).fadeOut("normal", function () {
-        if (!!$(PREVIEW_POPUP_HOW_TO + " iframe").length) {
-          $(PREVIEW_POPUP_HOW_TO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        }
-      });
+
+      await fadeOutAsync(OVERLAY, "normal");
+
+      if (!!$(PREVIEW_POPUP_HOW_TO + " iframe").length) {
+        $(PREVIEW_POPUP_HOW_TO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      }
     }
     if ($(WELCOME_POPUP).css("display") === "block") {
       $(APP_POPUP + "," + DELETE_APP_POPUP + "," + PREVIEW_POPUP_HOW_TO_WRAPPER).hide();
       $(OVERLAY).fadeOut("normal");
     }
     if ($(SCAN_PAGE_POPUP).css("display") === "block") {
-      hideScanner();
+      await hideScanner();
       cur_add = 0;
     }
     if ($(APP_POPUP).css("display") === "block") {
@@ -2909,11 +2909,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     if ($(PREVIEW_POPUP_VIDEO).css("display") === "block") {
       $(OVERLAY).fadeOut("normal");
-      $(PREVIEW_POPUP_VIDEO).fadeOut("normal", function () {
-        if (!!$(PREVIEW_POPUP_VIDEO + " iframe").length) {
-          $(PREVIEW_POPUP_VIDEO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        }
-      });
+
+      await fadeOutAsync(PREVIEW_POPUP_VIDEO, "normal");
+
+      if (!!$(PREVIEW_POPUP_VIDEO + " iframe").length) {
+        $(PREVIEW_POPUP_VIDEO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      }
     }
   });
 
@@ -3084,16 +3085,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   });
 
-  $(document).on("click", WELCOME_HOW_TO_BUTTON + "," + WELCOME_CREATE_BUTTON + "," + CLOSE_WELCOME_POPUP + "," + CLOSE_HOW_TO_POPUP + "," + BACK_TO_WELCOME_HOW_TO + "," + BACK_TO_WELCOME_CREATE, function () {
+  $(document).on("click", WELCOME_HOW_TO_BUTTON + "," + WELCOME_CREATE_BUTTON + "," + CLOSE_WELCOME_POPUP + "," + CLOSE_HOW_TO_POPUP + "," + BACK_TO_WELCOME_HOW_TO + "," + BACK_TO_WELCOME_CREATE, async function () {
     if ($(this).is(WELCOME_HOW_TO_BUTTON)) {
-      $(WELCOME_POPUP).fadeOut("normal", function () {
-        $(HOW_TO + " img").trigger("click");
-      });
+      await fadeOutAsync(WELCOME_POPUP, "normal");
+      $(HOW_TO + " img").trigger("click");
     }
     if ($(this).is(WELCOME_CREATE_BUTTON)) {
-      $(WELCOME_POPUP).fadeOut("normal", function () {
-        $(HEADER_RIGHT).trigger("click");
-      });
+      await fadeOutAsync(WELCOME_POPUP, "normal");
+      $(HEADER_RIGHT).trigger("click");
     }
     if ($(this).is(CLOSE_WELCOME_POPUP)) {
       $(APP_POPUP + "," + DELETE_APP_POPUP).hide();
@@ -3102,23 +3101,20 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     if ($(this).is(CLOSE_HOW_TO_POPUP)) {
       $(APP_POPUP + "," + DELETE_APP_POPUP).hide();
-      $(PREVIEW_POPUP_HOW_TO_WRAPPER).fadeOut("normal", function () {
-        $(PREVIEW_POPUP_HOW_TO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-      });
+      await fadeOutAsync(PREVIEW_POPUP_HOW_TO_WRAPPER, "normal");
+      $(PREVIEW_POPUP_HOW_TO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
       $(OVERLAY).fadeOut("normal");
     }
     if ($(this).is(BACK_TO_WELCOME_HOW_TO)) {
-      $(PREVIEW_POPUP_HOW_TO_WRAPPER).fadeOut("normal", function () {
-        $(WELCOME_POPUP).fadeIn("normal");
-        if (!!$(PREVIEW_POPUP_HOW_TO + " iframe").length) {
-          $(PREVIEW_POPUP_HOW_TO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        }
-      });
+      await fadeOutAsync(PREVIEW_POPUP_HOW_TO_WRAPPER, "normal");
+      $(WELCOME_POPUP).fadeIn("normal");
+      if (!!$(PREVIEW_POPUP_HOW_TO + " iframe").length) {
+        $(PREVIEW_POPUP_HOW_TO + " iframe")[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      }
     }
     if ($(this).is(BACK_TO_WELCOME_CREATE)) {
-      $(APP_POPUP).fadeOut("normal", function () {
-        $(WELCOME_POPUP).fadeIn("normal");
-      });
+      await fadeOutAsync(APP_POPUP, "normal");
+      $(WELCOME_POPUP).fadeIn("normal");
     }
   });
 
@@ -3364,17 +3360,19 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   //HIDE SCANNER POPUP
-  function hideScanner() {
+  async function hideScanner() {
     $(SCAN_ERROR_MESSAGE).hide();
     $(SCAN_PAGE_GIF).hide();
-    $(OVERLAY).fadeOut("normal", function () {
-      $(SCAN_FOUND_TITLE).html("");
-      $(SCAN_FOUND_AUTHOR).html("");
-      $(SCAN_FOUND_SELECT).html("");
-    });
-    $(SCAN_PAGE_POPUP).fadeOut("normal", function () {
-      $(SCAN_PAGE_GIF).show();
-    });
+
+    await fadeOutAsync(OVERLAY, "normal");
+
+    $(SCAN_FOUND_TITLE).html("");
+    $(SCAN_FOUND_AUTHOR).html("");
+    $(SCAN_FOUND_SELECT).html("");
+
+    await fadeOutAsync(SCAN_PAGE_POPUP, "normal");
+
+    $(SCAN_PAGE_GIF).show();
   }
 
   //SHOW PLAYLIST MESSAGE
